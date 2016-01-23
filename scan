@@ -16,5 +16,5 @@ fi
 
 while [ -z "$result" ]; do 
 	doscan $pdf
-	checkfile $pdf
+	checkfile $pdf $final
 done
