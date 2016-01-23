@@ -1,0 +1,41 @@
+#!/bin/bash
+
+source ${0%/*}/scan_common.sh
+
+if [ -z "$1" ]; then
+	echo "saisir un nom de fichier pour le scan"
+	exit 1
+fi
+final=~/$1
+pdfmerge=/tmp/scan.pdf
+dir=/tmp/scan
+rm -rf $dir $pdfmerge
+mkdir $dir
+
+if [ -f "$final" ]; then 
+	echo "le fichier existe déjà"
+	exit 1
+fi
+
+count=1
+while [ -z "$infini" ]; do 
+	while [ -z "$result" ]; do
+		pdf=$dir/$count.pdf
+		echo "scan page $count"
+		doscan $pdf
+		count=$(echo "$count + 1" | bc)
+
+		PS3='encore une page ? > '   # le prompt
+		LISTE=("[o]ui" "[n]on")  # liste de choix disponibles
+		select CHOIX in "${LISTE[@]}" ; do
+			case $REPLY in
+				1|o) break;;
+				2|n) result=1; break;;
+			esac
+		done
+	done
+	pdfmerge $pdfmerge $dir/*
+	rm -rf $dir
+	result=
+	checkfile $pdfmerge $final
+done

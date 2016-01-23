@@ -1,0 +1,20 @@
+#!/bin/bash
+
+source ${0%/*}/scan_common.sh
+
+if [ -z "$1" ]; then
+	echo "saisir un nom de fichier pour le scan"
+	exit 1
+fi
+final=~/$1
+pdf=/tmp/scan.pdf
+
+if [ -f "$final" ]; then 
+	echo "le fichier existe déjà"
+	exit 1
+fi
+
+while [ -z "$result" ]; do 
+	doscan $pdf
+	checkfile $pdf
+done
