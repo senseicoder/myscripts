@@ -1,0 +1,12 @@
+#!/bin/sh
+
+temp=/tmp/pdfsmall.ps
+
+for fichier in "$@"
+do
+	echo $fichier
+	pdftops "$fichier" $temp && ps2pdf $temp "$fichier"
+	# meilleure qualité, poids plus important pdftops -paper match -nocrop -noshrink -nocenter -level3 -q "$fichier" $temp && ps2pdf -dEmbedAllFonts=true -dUseFlateCompression=true -dProcessColorModel=/DeviceCMYK -dConvertCMYKImagesToRGB=false -dOptimize=true -dPDFSETTINGS=/prepress  $temp "$fichier"
+done
+
+rm $temp

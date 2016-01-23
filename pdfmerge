@@ -1,0 +1,45 @@
+#!/bin/bash
+
+cible=$1
+sources=""
+sourcesorig=""
+
+if [ -f "$cible" ]; then
+	echo "fichier $cible existe déjà"
+	exit 1
+fi
+
+echo "-- fichiers dans l'ordre"
+compteur=1
+for i in "$@"
+do
+	if [[ "" != "$unefois" ]]; then
+		sourcesorig="$sourcesorig $i"
+		if [ ! -f "$i" ]; then 
+			echo "fichier $i source non trouvé"
+			exit 1
+		fi
+	        echo $i
+		newfichier=$(printf "/tmp/%04d.pdf" $compteur)
+		rm -rf $newfichier
+		cp "$i" $newfichier
+		compteur=$(expr $compteur + 1)
+		sources="$sources $newfichier"
+	fi
+	unefois=faux
+done
+
+echo ""
+echo "-- execution"
+gs -dNOPAUSE -sDEVICE=pdfwrite -sOUTPUTFILE="$cible" -dBATCH $sources
+rm $sources
+
+evince "$cible"
+PS3='Fichier correct ? > '   # le prompt
+LISTE=("[o]ui" "[n]on")  # liste de choix disponibles
+select CHOIX in "${LISTE[@]}" ; do
+	case $REPLY in
+		1|o) rm $sourcesorig; break;;
+		2|n) echo "à gérer à la main : $sourcesorig"; break;;
+	esac
+done
