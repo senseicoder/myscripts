@@ -1,0 +1,56 @@
+#!/bin/bash
+
+function docker_killrm()
+{
+	local liste=$@
+
+	if [ ! -z "$liste" ]; then
+		docker kill $liste 2>&1 | grep -v 'is not running'
+		docker rm -f $liste
+	fi
+}
+
+function docker_sweep()
+{
+	local liste=$(docker ps --filter "status=exited" -q |xargs)
+	docker_killrm $liste
+	docker volume ls -qf dangling=true | xargs -r docker volume rm
+}
+
+function docker_cleanall()
+{
+	local liste=$(docker ps -aq |xargs)
+	docker_killrm $liste
+}
+
+function docker_rmi_none()
+{
+	liste=$(docker images -a | grep none | awk '{print $3}' |xargs)
+	if [ ! -z "$liste" ]; then
+	    docker rmi $liste 2>&1 | grep -v "image has dependent child images"
+	fi	
+}
+
+case $1 in
+ip)
+	docker inspect --format '{{.NetworkSettings.IPAddress}}' $2
+	;;
+
+clean)
+	docker_killrm $2
+	docker_rmi_none
+	;;
+
+sweep) 
+	docker_sweep
+	docker_rmi_none
+	;;
+
+cleanall)
+	docker_cleanall
+	docker_rmi_none
+	;;
+
+*)
+	echo 'docker.sh clean $vm|sweep|cleanall'
+esac
