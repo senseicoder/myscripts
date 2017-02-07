@@ -1,0 +1,7 @@
+#!/bin/bash
+
+case $1 in
+recode) git remote set-url origin $(git config --get remote.origin.url |sed -e 's#https://#ssh://git@#');;
+*)
+	echo "$(basename $0) recode"
+esac
