@@ -1,0 +1,18 @@
+#!/bin/bash
+
+case $1 in
+mk)
+	base=dswork_$2
+	echo "création base $base"
+	mysql -e "create database $base";
+	;;
+
+load)
+	base=dswork_$2
+	file=$3
+	table=$(echo $file | sed -e 's/[ -]/_/g')
+	if [ "$4" == "auto" ]; headers=$(head -1 "$file"); else headers=
+
+	echo "chargement $file dans $base.$table"
+	;;
+esac
