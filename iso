@@ -7,7 +7,7 @@
 # * le but est d'ouvrir une fois, et de builder plusieurs fois si on teste quelque chose, faut faire tourner ce scénario
 
 ABS=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
-base=~/livecd
+base=~/livecd.modified
 
 case $1 in
 on)
@@ -27,6 +27,7 @@ on)
 	echo "*** extraction iso"
 	mkdir $base
 	cd $base
+	echo $iso > source.txt
 	mkdir iso squashfs mnt
 	sudo mount -o loop $iso mnt
 	cp -a mnt/. iso
@@ -59,43 +60,47 @@ off)
 		exit 1
 	fi
 
-	if [ ! -f "$2" ]; then
+	if [ -z "$2" ]; then
 		echo "second paramètre : iso de départ"
 		exit 1
+	elif [ -e "$2" ]; then 
+		echo "l'iso $2 existe déjà"
+		exit 1
 	fi
-	iso=$(realpath $2)
+	iso=$2
 
+	cd $base
 	echo "*** écriture iso $iso"
 
-	cp ./hosts squashfs/etc/hosts
-	cp ./sources.list squashfs/etc/apt/sources.list
-	rm squashfs/etc/hosts
+	sudo cp ./hosts squashfs/etc/hosts
+	sudo cp ./sources.list squashfs/etc/apt/sources.list
+	sudo rm squashfs/etc/hosts
 
 	#todo, un peu violent non, trop générique ? 
-	killall -9 mysqld mysqld_safe apache2 winbindd sshd smbd nmbd freshclam
-	echo "umount killall $?"
-	sleep 10
-
+	#killall -9 mysqld mysqld_safe apache2 winbindd sshd smbd nmbd freshclam
+	#echo "umount killall $?"
+	#sleep 10
+	
 	#todo, en fait il faut reprendre le code du clean, umount de tout, et si un seul survit on arrête
 	#todo voir si ce umount est nécessaire pour le rebuild iso, et donc s'il faut le laisser là
 	sudo umount squashfs/proc/sys/fs/binfmt_misc squashfs/proc squashfs/sys squashfs/dev/pts squashfs/dev squashfs/dev/pts
 	echo "umount return $?"
 
 	chmod a+w iso/casper/filesystem.manifest
-	chroot squashfs dpkg-query -W --showformat='${Package} ${Version}\n' > iso/casper/filesystem.manifest
+	sudo chroot squashfs dpkg-query -W --showformat='${Package} ${Version}\n' > iso/casper/filesystem.manifest
 	chmod go-w iso/casper/filesystem.manifest
 
 	echo "*** build squashfs"
-	rm iso/casper/filesystem.squashfs
+	sudo rm -f iso/casper/filesystem.squashfs
 	cd squashfs
 	buildiso=~/buildiso_$(date +%F_%Hh%Mm%Ss).log
-	mksquashfs . ../iso/casper/filesystem.squashfs -info >> $buildiso
+	sudo mksquashfs . ../iso/casper/filesystem.squashfs -info >> $buildiso
 	cd ..
 	cd iso
 
 	echo "*** build de l'iso $fichier"
-	bash -c "find . -path ./isolinux -prune -o -type f -not -name md5sum.txt -print0 | xargs -0 md5sum | tee md5sum.txt"
-	genisoimage -o "$iso" -r -J -no-emul-boot -boot-load-size 4 -boot-info-table -b isolinux/isolinux.bin -c isolinux/boot.cat ./ >> $buildiso
+	sudo bash -c "find . -path ./isolinux -prune -o -type f -not -name md5sum.txt -print0 | xargs -0 md5sum > md5sum.txt"
+	sudo genisoimage -o "$iso" -r -J -input-charset utf-8 -no-emul-boot -boot-load-size 4 -boot-info-table -b isolinux/isolinux.bin -c isolinux/boot.cat ./ >> $buildiso
 	cd ~
 	;;
 
