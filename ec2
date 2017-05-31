@@ -84,6 +84,7 @@ list)
 	;;
 
 *) 
+	echo "$0 install"
 	echo "$0 running|stopped|list [filtre optionnel]"
 	echo "$0 stop OSEA-dev"
 	echo "$0 stop OSEA-form"
