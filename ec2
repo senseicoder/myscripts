@@ -1,0 +1,77 @@
+#!/bin/bash
+
+#todo 
+#retourner ordre des vars dans jq
+#avoir un cache des VM existantes pour accélérer
+#corriger affichage tags, qui filtrent mal
+
+function listinstances
+{
+	echo "todo"
+}
+
+function listregions
+{
+	aws ec2 describe-regions --output text | cut -f3
+}
+
+function showlistinstance
+{
+	echo "$1" | jq --compact-output '.Reservations[] | ( .Instances[] | {state: .State.Name, name: .KeyName, type: .InstanceType, key: .KeyName, app: .Tags | .[3].Value, env: .Tags | .[1].Value })'
+}
+
+case $1 in
+install)
+	sudo apt-get install jq
+	;;
+
+stop)
+	appli=$2
+	if [ -z "$appli" ]; then
+		echo $0 stop nomappli environnement
+		exit 1
+	fi
+
+	env=$3
+	if [ -z "$env" ]; then
+		echo $0 stop nomappli environnement
+		exit 1
+	fi
+
+	for region in $(listregions); do
+		liste=$(aws ec2 describe-instances --filters "Name=tag:Appli,Values=$appli"  "Name=tag:Env,Values=$env" --region $region | jq --raw-output '.Reservations[] | ( .Instances[] | { id: .InstanceId })' | grep 'id' | sed -e 's/.*://g' -e 's/"//g')
+		for id in $liste; do 
+			echo "arrêt $id dans $region"
+			aws ec2 stop-instances --instance-ids $id --region $region
+		done
+	done
+	;;
+
+running)
+	for region in $(listregions); do
+		liste=$(aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" --region $region)
+		echo -e "\nListing Instances in region:'$region'..."
+		echo $liste | jq --compact-output '.Reservations[] | ( .Instances[] | {state: .State.Name, name: .KeyName, type: .InstanceType, key: .KeyName, app: .Tags | .[3].Value, env: .Tags | .[1].Value })'
+	done
+	;;
+
+stopped)
+	for region in $(listregions); do
+		liste=$(aws ec2 describe-instances --filters "Name=instance-state-name,Values=stopped" --region $region)
+ 		echo -e "\nListing Instances in region:'$region'..."
+ 		echo $liste | jq --compact-output '.Reservations[] | ( .Instances[] | {state: .State.Name, name: .KeyName, type: .InstanceType, key: .KeyName, app: .Tags | .[3].Value, env: .Tags | .[1].Value })'
+	done
+	;;
+
+list)
+	for region in $(listregions); do
+		liste=$(aws ec2 describe-instances --region $region)
+		echo -e "\nListing Instances in region:'$region'..."
+		echo $liste | jq --compact-output '.Reservations[] | ( .Instances[] | {state: .State.Name, name: .KeyName, type: .InstanceType, key: .KeyName, app: .Tags | .[3].Value, env: .Tags | .[1].Value })'
+	done
+	;;
+
+*) echo $0 running|stopped|list
+
+#aws ec2 describe-instances --filters "Name=tag:Appli,Values=GLASS" --region eu-central-1
+esac
