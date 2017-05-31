@@ -6,20 +6,23 @@
 #corriger affichage tags, qui filtrent mal
 #startup, avec couches de démarrage
 
-function listinstances
-{
-	echo "todo"
-}
-
 function listregions
 {
-	aws ec2 describe-regions --output text | cut -f3
+	echo "eu-central-1 eu-west-1 eu-west-2"
+	#aws ec2 describe-regions --output text | cut -f3
 }
 
-function showlistinstance
+function paramsjq
 {
-	echo "$1" | jq --compact-output '.Reservations[] | ( .Instances[] | {state: .State.Name, name: .KeyName, type: .InstanceType, key: .KeyName, app: .Tags | .[3].Value, env: .Tags | .[1].Value })'
+	echo '.Reservations[] | ( .Instances[] | {state: .State.Name, type: .InstanceType, key: .KeyName, app: .Tags[] | select(.Key == "Name") | .Value })'
 }
+
+function listinstances
+{
+	aws ec2 describe-instances --filters "Name=tag:Name,Values=*$filter*" --region $region | jq --raw-output '.Reservations[] | ( .Instances[] | { id: .InstanceId })' | grep 'id' | sed -e 's/.*://g' -e 's/"//g'
+}
+
+filter=$2
 
 case $1 in
 install)
@@ -27,20 +30,13 @@ install)
 	;;
 
 stop)
-	appli=$2
-	if [ -z "$appli" ]; then
-		echo $0 stop nomappli environnement
-		exit 1
-	fi
-
-	env=$3
-	if [ -z "$env" ]; then
-		echo $0 stop nomappli environnement
+	if [ -z "$filter" ]; then
+		echo "$0 stop filtre"
 		exit 1
 	fi
 
 	for region in $(listregions); do
-		liste=$(aws ec2 describe-instances --filters "Name=tag:Appli,Values=$appli"  "Name=tag:Env,Values=$env" --region $region | jq --raw-output '.Reservations[] | ( .Instances[] | { id: .InstanceId })' | grep 'id' | sed -e 's/.*://g' -e 's/"//g')
+		liste=$(listinstances)
 		for id in $liste; do 
 			echo "arrêt $id dans $region"
 			aws ec2 stop-instances --instance-ids $id --region $region
@@ -48,31 +44,49 @@ stop)
 	done
 	;;
 
+start)
+	if [ -z "$filter" ]; then
+		echo "$0 stop filtre"
+		exit 1
+	fi
+
+	for region in $(listregions); do
+		liste=$(listinstances)
+		for id in $liste; do 
+			echo "démarrage $id dans $region"
+			aws ec2 start-instances --instance-ids $id --region $region
+		done
+	done
+	;;
+
 running)
 	for region in $(listregions); do
-		liste=$(aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" --region $region)
+		liste=$(aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" "Name=tag:Name,Values=*$filter*" --region $region)
 		echo -e "\nListing Instances in region:'$region'..."
-		echo $liste | jq --compact-output '.Reservations[] | ( .Instances[] | {state: .State.Name, name: .KeyName, type: .InstanceType, key: .KeyName, app: .Tags | .[3].Value, env: .Tags | .[1].Value })'
+		echo $liste | jq --compact-output "$(paramsjq)"
 	done
 	;;
 
 stopped)
 	for region in $(listregions); do
-		liste=$(aws ec2 describe-instances --filters "Name=instance-state-name,Values=stopped" --region $region)
+		liste=$(aws ec2 describe-instances --filters "Name=instance-state-name,Values=stopped" "Name=tag:Name,Values=*$filter*" --region $region)
  		echo -e "\nListing Instances in region:'$region'..."
- 		echo $liste | jq --compact-output '.Reservations[] | ( .Instances[] | {state: .State.Name, name: .KeyName, type: .InstanceType, key: .KeyName, app: .Tags | .[3].Value, env: .Tags | .[1].Value })'
+ 		echo $liste | jq --compact-output "$(paramsjq)"
 	done
 	;;
 
 list)
 	for region in $(listregions); do
-		liste=$(aws ec2 describe-instances --region $region)
+		liste=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=*$filter*" --region $region)
 		echo -e "\nListing Instances in region:'$region'..."
-		echo $liste | jq --compact-output '.Reservations[] | ( .Instances[] | {state: .State.Name, name: .KeyName, type: .InstanceType, key: .KeyName, app: .Tags | .[3].Value, env: .Tags | .[1].Value })'
+		echo $liste | jq --compact-output "$(paramsjq)"
 	done
 	;;
 
-*) echo $0 running|stopped|list
-
-#aws ec2 describe-instances --filters "Name=tag:Appli,Values=GLASS" --region eu-central-1
+*) 
+	echo "$0 running|stopped|list [filtre optionnel]"
+	echo "$0 stop OSEA-dev"
+	echo "$0 stop OSEA-form"
+	echo "$0 stop GLASS"
+	echo "$0 stop|start LABBOOK_build_iso"
 esac
