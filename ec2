@@ -4,6 +4,7 @@
 #retourner ordre des vars dans jq
 #avoir un cache des VM existantes pour accélérer
 #corriger affichage tags, qui filtrent mal
+#startup, avec couches de démarrage
 
 function listinstances
 {
