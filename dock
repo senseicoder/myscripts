@@ -31,6 +31,17 @@ function docker_rmi_none()
 	fi	
 }
 
+function docker_path()
+{
+	local cnt=$1
+
+        cnt_id=$(docker inspect $cnt |grep Id | sed -e 's/.*: //g' -e 's/[",]//g')
+        mount_id=$(sudo cat /var/lib/docker/image/aufs/layerdb/mounts/$cnt_id/mount-id)
+        mount_path=/var/lib/docker/aufs/mnt/$mount_id
+
+	echo $mount_path
+}
+
 case $1 in
 ip)
 	docker inspect --format '{{.NetworkSettings.IPAddress}}' $2
@@ -49,6 +60,10 @@ sweep)
 cleanall)
 	docker_cleanall
 	docker_rmi_none
+	;;
+
+path)
+	docker_path $2
 	;;
 
 *)
