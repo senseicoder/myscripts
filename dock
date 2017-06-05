@@ -42,6 +42,22 @@ function docker_path()
 	echo $mount_path
 }
 
+function docker_in()
+{
+	docker exec -ti $1 bash
+}
+
+function docker_ipa()
+{
+	docker exec $1 ip a
+}
+
+function docker_restart()
+{
+	docker stop $1
+	docker restart $1
+}
+
 case $1 in
 ip)
 	docker inspect --format '{{.NetworkSettings.IPAddress}}' $2
@@ -64,6 +80,18 @@ cleanall)
 
 path)
 	docker_path $2
+	;;
+
+in)
+	docker_in $2
+	;; 
+
+restart)
+	docker_restart $2
+	;;
+
+ipa)
+	docker_ipa $2
 	;;
 
 *)
