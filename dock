@@ -35,11 +35,21 @@ function docker_path()
 {
 	local cnt=$1
 
-        cnt_id=$(docker inspect $cnt |grep Id | sed -e 's/.*: //g' -e 's/[",]//g')
-        mount_id=$(sudo cat /var/lib/docker/image/aufs/layerdb/mounts/$cnt_id/mount-id)
-        mount_path=/var/lib/docker/aufs/mnt/$mount_id
+	cnt_id=$(docker inspect $cnt |grep Id | sed -e 's/.*: //g' -e 's/[",]//g')
+	mount_id=$(sudo cat /var/lib/docker/image/aufs/layerdb/mounts/$cnt_id/mount-id)
+	mount_path=/var/lib/docker/aufs/mnt/$mount_id
 
 	echo $mount_path
+}
+
+function docker_logs()
+{
+	local cnt=$1
+
+	cnt_id=$(docker inspect $cnt |grep Id | sed -e 's/.*: //g' -e 's/[",]//g')
+	logs_path=/var/lib/docker/containers/$cnt_id/$cnt_id-json.log
+
+	sudo tail -f $logs_path
 }
 
 function docker_in()
@@ -90,8 +100,19 @@ restart)
 	docker_restart $2
 	;;
 
+#test)
+#	while 1 do;
+#		docker_in $2
+#		docker_restart $2
+#	done
+#	;;
+
 ipa)
 	docker_ipa $2
+	;;
+
+logs)
+	docker_logs $2
 	;;
 
 *)
