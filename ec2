@@ -9,7 +9,7 @@
 function listregions
 {
 	echo "eu-central-1 eu-west-1 eu-west-2"
-	#aws ec2 describe-regions --output text | cut -f3
+	#/usr/local/bin/aws ec2 describe-regions --output text | cut -f3
 }
 
 function paramsjq
@@ -19,7 +19,7 @@ function paramsjq
 
 function listinstances
 {
-	aws ec2 describe-instances --filters "Name=tag:Name,Values=*$filter*" --region $region | jq --raw-output '.Reservations[] | ( .Instances[] | { id: .InstanceId })' | grep 'id' | sed -e 's/.*://g' -e 's/"//g'
+	/usr/local/bin/aws ec2 describe-instances --filters "Name=tag:Name,Values=*$filter*" --region $region | jq --raw-output '.Reservations[] | ( .Instances[] | { id: .InstanceId })' | grep 'id' | sed -e 's/.*://g' -e 's/"//g'
 }
 
 filter=$2
@@ -39,7 +39,7 @@ stop)
 		liste=$(listinstances)
 		for id in $liste; do 
 			echo "arrêt $id dans $region"
-			aws ec2 stop-instances --instance-ids $id --region $region
+			/usr/local/bin/aws ec2 stop-instances --instance-ids $id --region $region
 		done
 	done
 	;;
@@ -54,14 +54,14 @@ start)
 		liste=$(listinstances)
 		for id in $liste; do 
 			echo "démarrage $id dans $region"
-			aws ec2 start-instances --instance-ids $id --region $region
+			/usr/local/bin/aws ec2 start-instances --instance-ids $id --region $region
 		done
 	done
 	;;
 
 running)
 	for region in $(listregions); do
-		liste=$(aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" "Name=tag:Name,Values=*$filter*" --region $region)
+		liste=$(/usr/local/bin/aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" "Name=tag:Name,Values=*$filter*" --region $region)
 		echo -e "\nListing Instances in region:'$region'..."
 		echo $liste | jq --compact-output "$(paramsjq)"
 	done
@@ -69,7 +69,7 @@ running)
 
 stopped)
 	for region in $(listregions); do
-		liste=$(aws ec2 describe-instances --filters "Name=instance-state-name,Values=stopped" "Name=tag:Name,Values=*$filter*" --region $region)
+		liste=$(/usr/local/bin/aws ec2 describe-instances --filters "Name=instance-state-name,Values=stopped" "Name=tag:Name,Values=*$filter*" --region $region)
  		echo -e "\nListing Instances in region:'$region'..."
  		echo $liste | jq --compact-output "$(paramsjq)"
 	done
@@ -77,7 +77,7 @@ stopped)
 
 list)
 	for region in $(listregions); do
-		liste=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=*$filter*" --region $region)
+		liste=$(/usr/local/bin/aws ec2 describe-instances --filters "Name=tag:Name,Values=*$filter*" --region $region)
 		echo -e "\nListing Instances in region:'$region'..."
 		echo $liste | jq --compact-output "$(paramsjq)"
 	done
