@@ -14,7 +14,7 @@ function listregions
 
 function paramsjq
 {
-	echo '.Reservations[] | ( .Instances[] | {state: .State.Name, type: .InstanceType, key: .KeyName, app: .Tags[] | select(.Key == "Name") | .Value })'
+	echo '.Reservations[] | ( .Instances[] | {private: .PrivateIpAddress, public: .PublicIpAddress, state: .State.Name, type: .InstanceType, key: .KeyName, app: .Tags[] | select(.Key == "Name") | .Value })'
 }
 
 function listinstances
