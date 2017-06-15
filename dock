@@ -115,12 +115,12 @@ logs)
 	docker_logs $2
 	;;
 
-networkreset)
+reboot)
 	sudo systemctl stop docker
         sudo ip link del docker0
         sudo systemctl start docker
 	;;
 
 *)
-	echo 'docker.sh clean $vm|sweep|cleanall'
+	echo 'dock clean $vm|sweep|cleanall'
 esac
