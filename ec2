@@ -59,6 +59,29 @@ start)
 	done
 	;;
 
+restart)
+	if [ -z "$filter" ]; then
+		echo "$0 stop filtre"
+		exit 1
+	fi
+
+	for region in $(listregions); do
+		liste=$(listinstances)
+		for id in $liste; do 
+			echo "arrêt $id dans $region"
+			/usr/local/bin/aws ec2 stop-instances --instance-ids $id --region $region
+			arreted=""
+			until [[ ! -z "$arreted" ]]; do
+				sleep 30
+				arreted=$(/usr/local/bin/aws ec2 stop-instances --instance-ids $id --region $region | grep stopped)
+				echo "attente"
+			done
+			echo "démarrage $id dans $region"
+			/usr/local/bin/aws ec2 start-instances --instance-ids $id --region $region
+		done
+	done
+	;;
+
 running)
 	for region in $(listregions); do
 		liste=$(/usr/local/bin/aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" "Name=tag:Name,Values=*$filter*" --region $region)
