@@ -5,11 +5,16 @@
 
 # todo
 # * le but est d'ouvrir une fois, et de builder plusieurs fois si on teste quelque chose, faut faire tourner ce scénario
+# * ./livecd.modified/iso/dest.iso, devrait pas être là
 
 ABS=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
 base=~/livecd.modified
 
 case $1 in
+install)
+	sudo apt install -y realpath squashfs-tools schroot genisoimage
+	;;
+
 on)
 	echo "*** chargement iso $iso"
 
