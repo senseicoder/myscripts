@@ -100,6 +100,14 @@ restart)
 	docker_restart $2
 	;;
 
+resetrzo)
+	sudo service docker stop
+	sudo iptables -t nat -F
+	sudo ifconfig docker0 down
+	sudo brctl delbr docker0
+	sudo service docker start
+	;;
+
 #test)
 #	while 1 do;
 #		docker_in $2
@@ -122,5 +130,5 @@ reboot)
 	;;
 
 *)
-	echo 'dock clean $vm|sweep|cleanall'
+	echo 'dock clean $vm|sweep|cleanall|resetrzo|ipa|logs|reboot'
 esac
