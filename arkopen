@@ -1,0 +1,71 @@
+#!/bin/bash
+
+file=$(realpath $1)
+
+if [ -z "$file" ]; then 
+	echo "$0 fichier"
+	exit 1
+fi
+
+dest=~/Work/arkopen/$(basename $file | sed 's/[.][a-z]*$//g')
+if [ -d "$dest" ]; then 
+	echo "le dossier $dest existe déjà"
+	exit 1
+fi
+
+type=''
+filetype=$(file $file)
+for filtre in Zip RPM Debian tar; do 
+	echo $filetype | grep $filtre &>/dev/null
+	if [ $? -eq 0 ]; then type=$filtre; fi
+done
+
+if [[ "$file" =~ tar.gz ]]||[[ "$file" =~ tgz ]]; then type=targz; fi
+if [[ "$file" =~ tar.bz2 ]]||[[ "$file" =~ tbz2 ]]; then type=tarbz2; fi
+
+if [ ! -z "$type" ]; then 
+	mkdir -p $dest
+
+	case $type in
+	Zip)
+		unzip $file -d $dest
+		;;
+
+	RPM)
+		cd $dest
+		rpm2cpio $file | cpio -idmv
+		;;
+
+	Debian)
+		cd $dest
+		ar x $file
+		tar -xzf data.tar.gz
+		mkdir DEBIAN
+		cd DEBIAN
+		tar -xzf ../control.tar.gz
+		rm ../control.tar.gz ../data.tar.gz
+		;;
+
+	tar)
+		cd $dest
+		tar -xf $file
+		;;
+
+	targz)
+		cd $dest
+		tar -xzf $file
+		;;
+
+	tarbz2)
+		cd $dest
+		tar -xjf $file
+		;;
+
+	*)
+		echo "format non géré : $type"
+	esac
+
+	echo "cd $dest"
+else
+	echo "format non géré : $filetype"
+fi
