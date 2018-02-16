@@ -39,11 +39,11 @@ if [ ! -z "$type" ]; then
 	Debian)
 		cd $dest
 		ar x $file
-		tar -xzf data.tar.gz
+		for fichier in data.tar.*; do tar -xf $fichier; done
 		mkdir DEBIAN
 		cd DEBIAN
 		tar -xzf ../control.tar.gz
-		rm ../control.tar.gz ../data.tar.gz
+		rm ../control.tar.gz ../data.tar.*
 		;;
 
 	tar)
