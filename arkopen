@@ -1,20 +1,20 @@
 #!/bin/bash
 
-file=$(realpath $1)
+file=$(realpath "$1")
 
 if [ -z "$file" ]; then 
 	echo "$0 fichier"
 	exit 1
 fi
 
-dest=~/Work/arkopen/$(basename $file | sed 's/[.][a-z]*$//g')
+dest=~/Work/arkopen/$(basename "$file" | sed 's/[.][a-z]*$//g')
 if [ -d "$dest" ]; then 
 	echo "le dossier $dest existe déjà"
 	exit 1
 fi
 
 type=''
-filetype=$(file $file)
+filetype=$(file "$file")
 for filtre in Zip RPM Debian tar; do 
 	echo $filetype | grep $filtre &>/dev/null
 	if [ $? -eq 0 ]; then type=$filtre; fi
@@ -24,21 +24,21 @@ if [[ "$file" =~ tar.gz ]]||[[ "$file" =~ tgz ]]; then type=targz; fi
 if [[ "$file" =~ tar.bz2 ]]||[[ "$file" =~ tbz2 ]]; then type=tarbz2; fi
 
 if [ ! -z "$type" ]; then 
-	mkdir -p $dest
+	mkdir -p "$dest"
 
 	case $type in
 	Zip)
-		unzip $file -d $dest
+		unzip "$file" -d "$dest"
 		;;
 
 	RPM)
-		cd $dest
-		rpm2cpio $file | cpio -idmv
+		cd "$dest"
+		rpm2cpio "$file" | cpio -idmv
 		;;
 
 	Debian)
-		cd $dest
-		ar x $file
+		cd "$dest"
+		ar x "$file"
 		for fichier in data.tar.*; do tar -xf $fichier; done
 		mkdir DEBIAN
 		cd DEBIAN
@@ -47,18 +47,18 @@ if [ ! -z "$type" ]; then
 		;;
 
 	tar)
-		cd $dest
-		tar -xf $file
+		cd "$dest"
+		tar -xf "$file"
 		;;
 
 	targz)
-		cd $dest
-		tar -xzf $file
+		cd "$dest"
+		tar -xzf "$file"
 		;;
 
 	tarbz2)
-		cd $dest
-		tar -xjf $file
+		cd "$dest"
+		tar -xjf "$file"
 		;;
 
 	*)
