@@ -6,7 +6,7 @@ case $1 in
 issues)
 
 	headers="Authorization: Bearer $(cat $token)"
-	url='https://api.github.com/issues?filter=subscribed&state=all'
+	url='https://api.github.com/issues?filter=subscribed&state=open'
 
 	case $2 in
 	list)
