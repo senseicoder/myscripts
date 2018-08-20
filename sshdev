@@ -1,0 +1,16 @@
+#!/bin/bash
+
+srv=$1
+if [ -z "$srv" ]; then 
+	echo "premier paramètre : serveur ssh"
+	exit 1
+elif [ "$(ssh $srv mkdir -p dev &>/dev/null; echo $?)" -ne 0 ]; then
+	echo "serveur $srv injoignable"
+	exit 1
+fi
+
+local=~/${srv}_dev
+distant=$srv:dev
+
+mkdir -p $local
+sshfs $distant $local
