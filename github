@@ -1,0 +1,27 @@
+#!/bin/bash
+
+token=~/Sync/Dossiers/Dev/token_git.txt
+
+case $1 in
+issues)
+
+	headers="Authorization: Bearer $(cat $token)"
+	url='https://api.github.com/issues?filter=subscribed&state=all'
+
+	case $2 in
+	list)
+		curl -sH "$headers" "$url"|jq -r '.[] | [.repository.name, .title, .html_url, .updated_at] | @tsv' | grep issues | column -t -s $'\t' | sort
+		;;
+	csv)
+		curl -sH "$headers" "$url"|jq -r '.[] | [.repository.name, .title, .html_url, .updated_at] | @csv' | grep issues
+		;;
+	open)
+		for url in $(curl -sH "$headers" "$url"|jq '.[] | {html_url}' | grep issues | sed -e 's/.*https/https/' -e 's/"//'); do xdg-open $url; done
+		;;
+	*) echo "$0 $1 list|csv|open"
+	esac
+	;;
+
+*)
+	echo "$0 issues| <cmd>"
+esac
