@@ -1,0 +1,11 @@
+#!/bin/bash
+
+tmpfind=$(tempfile)
+tmpgit=$(tempfile)
+
+find -type f | sed 1d | sed 's#^./##' | grep -ve ^.git | sort > $tmpfind
+git ls-files | grep -ve .gitignore | sort > $tmpgit
+
+diff $tmpfind $tmpgit | grep \<
+
+rm $tmpfind $tmpgit
