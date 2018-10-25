@@ -1,7 +1,4 @@
 #!/bin/bash
-
-echo $@
-
 if [ "$1" == 'help' ]; then
 	echo "$0 vhost : donne les paramètres TLS d'un vhost"
 else
