@@ -1,0 +1,21 @@
+#!/bin/bash
+
+dird=/home/cedric/bin/public/snippets.d
+
+function help
+{
+	echo "$(basename $0) fonction [params propres]"
+	echo "fonctions: $(ls $dird)"	
+}
+
+if [ ! -z "$1" ]; then
+	if [ -f "$dird/$1" ]; then
+		script=$1
+		shift
+		bash $dird/$script $@
+	else
+		help
+	fi
+else
+	help
+fi

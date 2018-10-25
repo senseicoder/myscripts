@@ -1,0 +1,18 @@
+#!/bin/bash
+
+echo $@
+
+if [ "$1" == 'help' ]; then
+	echo "$0 vhost : donne les paramètres TLS d'un vhost"
+else
+	if [ ! -n "$1" ]; then
+		echo "usage: $0 vhost"
+	else
+		if [ -z "$2" ]; then 
+			port=443
+		else
+			port=$2
+		fi
+		nmap --script ssl-enum-ciphers -p $port $1
+	fi
+fi
