@@ -14,12 +14,25 @@ function listregions
 
 function paramsjq
 {
-	echo '.Reservations[] | ( .Instances[] | {private: .PrivateIpAddress, public: .PublicIpAddress, state: .State.Name, type: .InstanceType, key: .KeyName, app: .Tags[] | select(.Key == "Name") | .Value })'
+	echo '.Reservations[] | ( .Instances[] | {private: .PrivateIpAddress, public: .PublicIpAddress, state: .State.Name, type: .InstanceType, key: .KeyName, app: ( (.Tags // [{Key:"Name", Value:""}])[] | select(.Key == "Name") | .Value ) })'
 }
 
 function listinstances
 {
 	/usr/local/bin/aws ec2 describe-instances --filters "Name=tag:Name,Values=*$filter*" --region $region | jq --raw-output '.Reservations[] | ( .Instances[] | { id: .InstanceId })' | grep 'id' | sed -e 's/.*://g' -e 's/"//g'
+}
+
+function GetListEC2
+{
+	local region=$1
+	local state=$2
+	local filter=$3
+
+	if [ -z "$filter" ]; then 
+		/usr/local/bin/aws ec2 describe-instances --filters "Name=instance-state-name,Values=$state" --region $region | jq --compact-output "$(paramsjq)"
+	else
+		/usr/local/bin/aws ec2 describe-instances --filters "Name=instance-state-name,Values=$state" "Name=tag:Name,Values=*$filter*" --region $region | jq --compact-output "$(paramsjq)"
+	fi
 }
 
 filter=$2
@@ -84,25 +97,22 @@ restart)
 
 running)
 	for region in $(listregions); do
-		liste=$(/usr/local/bin/aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" "Name=tag:Name,Values=*$filter*" --region $region)
 		echo -e "\nListing Instances in region:'$region'..."
-		echo $liste | jq --compact-output "$(paramsjq)"
+		GetListEC2 $region running $filter
 	done
 	;;
 
 stopped)
 	for region in $(listregions); do
-		liste=$(/usr/local/bin/aws ec2 describe-instances --filters "Name=instance-state-name,Values=stopped" "Name=tag:Name,Values=*$filter*" --region $region)
- 		echo -e "\nListing Instances in region:'$region'..."
- 		echo $liste | jq --compact-output "$(paramsjq)"
+		echo -e "\nListing Instances in region:'$region'..."
+ 		GetListEC2 $region stopped $filter
 	done
 	;;
 
 list)
 	for region in $(listregions); do
-		liste=$(/usr/local/bin/aws ec2 describe-instances --filters "Name=tag:Name,Values=*$filter*" --region $region)
 		echo -e "\nListing Instances in region:'$region'..."
-		echo $liste | jq --compact-output "$(paramsjq)"
+		GetListEC2 $region "*" $filter
 	done
 	;;
 
