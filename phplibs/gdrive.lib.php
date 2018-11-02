@@ -1,7 +1,7 @@
 <?php
 #https://www.twilio.com/blog/2017/03/google-spreadsheets-and-php.html
 
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 use Google\Spreadsheet\DefaultServiceRequest;
 use Google\Spreadsheet\ServiceRequestFactory;
 
