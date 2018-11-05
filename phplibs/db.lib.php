@@ -49,23 +49,27 @@ class CDB
 		$this->Exec($sSQL);		
 	}
 
+	private function FormatArray(array $in, $sFormat)
+	{
+		$aOut = array();
+		foreach($in as $sValue) {
+			$aOut[] = sprintf($sFormat, $sValue);
+		}
+		return $aOut;
+	}
+
 	function Array2Table($sNom, array $aData)
 	{
 		$aChamps = array_keys($aData[0]);
-		$aChampsCreate = array();
-		foreach($aChamps as $sChamp) {
-			$aChampsCreate[] = sprintf('%s VARCHAR(255)', $sChamp);
-		}
+		$aChampsCreate = self::FormatArray($aChamps, '`%s` VARCHAR(255)');
+		$aChampsList = self::FormatArray($aChamps, '`%s`');
 
 		$nb = 0;
 		$sTable = $sNom;
 		$this->Recreate($sTable, $aChampsCreate);
 		foreach($aData as $aLine) {
-			$aValues = array();
-			foreach($aLine as $sValue) {
-				$aValues[] = sprintf('"%s"', $sValue);
-			}
-			$this->Exec(sprintf('insert into %s(%s) values(%s)', $sTable, implode(',', $aChamps), implode(',', $aValues)));
+			$aValues = self::FormatArray($aLine, '"%s"');
+			$this->Exec(sprintf('insert into %s(%s) values(%s)', $sTable, implode(',', $aChampsList), implode(',', $aValues)));
 			$nb++;
 		}		
 		return $nb;
