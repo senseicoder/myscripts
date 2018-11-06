@@ -141,7 +141,7 @@ wait)
 	while [ $nb -gt 0 ]; do
         nb=$(ec2 list "$filter" | grep $state |wc -l)
         if [ $nb -gt 0 ]; then 
-        	echo "attente ($nb)"
+        	echo "attente $state pour $filter: restent $nb vm"
         	sleep 15
         fi
 	done
