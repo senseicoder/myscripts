@@ -19,7 +19,7 @@ function paramsjq
 
 function listinstances
 {
-	/usr/local/bin/aws ec2 describe-instances --filters "Name=tag:Name,Values=*$filter*" --region $region | jq --raw-output '.Reservations[] | ( .Instances[] | { id: .InstanceId })' | grep 'id' | sed -e 's/.*://g' -e 's/"//g'
+	/usr/local/bin/aws ec2 describe-instances --filters "Name=tag:Name,Values=*$filter*" --region $region | jq -c --raw-output '.Reservations[] | ( .Instances[] | { id: .InstanceId, lib: ( (.Tags // [{Key:"Name", Value:""}])[] | select(.Key == "Name") | .Value ) })' | sed -e 's/"//g' -e 's/.*id://g' -e 's/,lib//g' -e 's/}//'
 }
 
 function GetListEC2
@@ -33,6 +33,22 @@ function GetListEC2
 	else
 		/usr/local/bin/aws ec2 describe-instances --filters "Name=instance-state-name,Values=$state" "Name=tag:Name,Values=*$filter*" --region $region | jq --compact-output "$(paramsjq)"
 	fi
+}
+
+function ExecOnInstance
+{
+	local region=$1
+	local action=$2
+	local id=$3
+
+	json=$(/usr/local/bin/aws ec2 $action --instance-ids $id --region $region)
+	case $action in 
+	stop-instances) label='.StoppingInstances';;
+	start-instances) label='.StartingInstances';;
+	*) echo "action $action inconnue"; exit 1
+	esac
+
+	echo "$(echo $json |jq $label'[0].PreviousState.Name') => $(echo $json |jq $label'[0].CurrentState.Name')" | sed 's/\"//g'
 }
 
 filter=$2
@@ -50,9 +66,10 @@ stop)
 
 	for region in $(listregions); do
 		liste=$(listinstances)
-		for id in $liste; do 
-			echo "arrêt $id dans $region"
-			/usr/local/bin/aws ec2 stop-instances --instance-ids $id --region $region
+		for vm in $liste; do 
+			id=$(echo $vm | cut -d: -f1)
+			label=$(echo $vm | cut -d: -f2)
+			echo "arrêt $label dans $region : $(ExecOnInstance $region 'stop-instances' $id)"
 		done
 	done
 	;;
@@ -65,9 +82,10 @@ start)
 
 	for region in $(listregions); do
 		liste=$(listinstances)
-		for id in $liste; do 
-			echo "démarrage $id dans $region"
-			/usr/local/bin/aws ec2 start-instances --instance-ids $id --region $region
+		for vm in $liste; do 
+			id=$(echo $vm | cut -d: -f1)
+			label=$(echo $vm | cut -d: -f2)
+			echo "démarrage $label dans $region : $(ExecOnInstance $region 'start-instances' $id)"
 		done
 	done
 	;;
@@ -80,17 +98,13 @@ restart)
 
 	for region in $(listregions); do
 		liste=$(listinstances)
-		for id in $liste; do 
-			echo "arrêt $id dans $region"
-			/usr/local/bin/aws ec2 stop-instances --instance-ids $id --region $region
-			arreted=""
-			until [[ ! -z "$arreted" ]]; do
-				sleep 30
-				arreted=$(/usr/local/bin/aws ec2 stop-instances --instance-ids $id --region $region | grep stopped)
-				echo "attente"
-			done
-			echo "démarrage $id dans $region"
-			/usr/local/bin/aws ec2 start-instances --instance-ids $id --region $region
+		for vm in $liste; do 
+			id=$(echo $vm | cut -d: -f1)
+			label=$(echo $vm | cut -d: -f2)
+
+			echo "arrêt $label dans $region : $(ExecOnInstance $region 'stop-instances' $id)"
+			ec2 wait $label stopping
+			echo "démarrage $label dans $region : $(ExecOnInstance $region 'start-instances' $id)"
 		done
 	done
 	;;
@@ -113,6 +127,23 @@ list)
 	for region in $(listregions); do
 		echo -e "\nListing Instances in region:'$region'..."
 		GetListEC2 $region "*" $filter
+	done
+	;;
+
+wait)
+	state=$3
+	if [ -z "$filter" ]||[ -z "$state" ]; then
+		echo "$0 wait filtre state"
+		exit 1
+	fi
+
+	nb=100
+	while [ $nb -gt 0 ]; do
+        nb=$(ec2 list "$filter" | grep $state |wc -l)
+        if [ $nb -gt 0 ]; then 
+        	echo "attente ($nb)"
+        	sleep 15
+        fi
 	done
 	;;
 
