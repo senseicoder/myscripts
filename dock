@@ -54,7 +54,7 @@ function docker_logs()
 
 function docker_in()
 {
-	docker exec -ti $1 bash
+	docker exec -e COLUMNS="`tput cols`" -e LINES="`tput lines`" -ti $1 bash
 }
 
 function docker_ipa()
