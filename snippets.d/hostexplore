@@ -1,0 +1,10 @@
+#!/bin/bash
+if [ "$1" == 'help' ]; then
+	echo "$0 ip/host : scanne les ports et guess l'OS"
+else
+	if [ ! -n "$1" ]; then
+		echo "usage: $0 ip/host"
+	else
+		sudo nmap -O --osscan-guess $1
+	fi
+fi

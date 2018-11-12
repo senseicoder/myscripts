@@ -5,7 +5,7 @@ dird=/home/cedric/bin/public/snippets.d
 function help
 {
 	echo "$(basename $0) fonction [params propres]"
-	echo "fonctions: $(ls $dird)"	
+	echo "fonctions: $(ls $dird |xargs)"	
 }
 
 if [ ! -z "$1" ]; then
