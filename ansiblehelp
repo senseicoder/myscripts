@@ -1,0 +1,24 @@
+#!/bin/bash
+
+case $1 in
+checkssh)
+	fichier=$2
+	exclude=$(grep '^\[' $fichier | sed -e 's/\[//' -e 's/\]//' | xargs |sed 's/ /|/g')
+	IFS=$'\n'
+	for srv in $(grep -ve ^$ -e '^#' -e '^\[' $fichier | grep -vE "^($exclude)$" | grep -v '^[\t ]*$' |sort |uniq); do 
+		if [ "$(echo $srv | grep ansible_ssh_host)" != "" ]; then
+			srv=$(echo $srv | sed -e 's/.*ansible_ssh_host=//')
+		fi
+		srv=$(echo $srv | sed 's/ .*//')
+
+		presence=$(ssh-keygen -H  -F $srv)
+		if [ -z "$presence" ]; then
+			output=$(ssh -o StrictHostKeyChecking=no -o ConnectTimeout=5 -o PasswordAuthentication=no $srv exit 2>&1 |xargs)
+			if [ ! -z "$output" ]; then echo "$srv: $output"; fi
+		fi
+	done	
+	;;
+
+*)
+	echo "$0 checkssh <fichier>"
+esac
