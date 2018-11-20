@@ -46,16 +46,30 @@ class CDB
 	{
 		$this->Exec('drop database if exists ' . $sDBName);
 		$sSQL = sprintf('create database %s', $sDBName);
-		$this->Exec($sSQL);		
+		$this->Exec($sSQL);	
+		$this->mysqli->select_db($sDBName);	
 	}
 
-	private function FormatArray(array $in, $sFormat)
+	private function FormatArray(array $in, $sFormat, array $aChamps = array())
 	{
 		$aOut = array();
-		foreach($in as $sValue) {
-			$aOut[] = sprintf($sFormat, $sValue);
+		if(empty($aChamps)) {
+			foreach($in as $sValue) {
+				$aOut[] = sprintf($sFormat, $sValue);
+			}
+		}
+		else {
+			foreach($aChamps as $sChamp) {
+				$in[$sChamp] = isset($in[$sChamp]) ? $in[$sChamp] : '';
+				$aOut[] = sprintf($sFormat, $sValue);
+			}
 		}
 		return $aOut;
+	}
+
+	function Table2Array($sNom)
+	{
+		return $this->Query("select * from $sNom");
 	}
 
 	function Array2Table($sNom, array $aData)
@@ -68,7 +82,7 @@ class CDB
 		$sTable = $sNom;
 		$this->Recreate($sTable, $aChampsCreate);
 		foreach($aData as $aLine) {
-			$aValues = self::FormatArray($aLine, '"%s"');
+			$aValues = self::FormatArray($aLine, '"%s"', $aChamps);
 			$this->Exec(sprintf('insert into %s(%s) values(%s)', $sTable, implode(',', $aChampsList), implode(',', $aValues)));
 			$nb++;
 		}		
