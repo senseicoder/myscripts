@@ -60,7 +60,7 @@ class CDB
 		}
 		else {
 			foreach($aChamps as $sChamp) {
-				$in[$sChamp] = isset($in[$sChamp]) ? $in[$sChamp] : '';
+				$sValue = isset($in[$sChamp]) ? $in[$sChamp] : '';
 				$aOut[] = sprintf($sFormat, $sValue);
 			}
 		}
