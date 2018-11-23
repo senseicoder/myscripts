@@ -1,0 +1,14 @@
+#!/bin/bash
+docbase="$0 [max]"
+
+if [ "$1" == 'help' ]; then
+	echo "$docbase : génère les prochains sprints pour LiquidPlanner"
+else
+	if [ -z "$1" ]; then max=5; else max=$1; fi
+	for (( i=1; i<=$max; i++ )); do 
+		monday=$(( i * 7 ))
+		sunday=$(( i * 7 + 1))
+		echo $(date -d'monday+'$monday' days' "+sprint infra du %d %B %Y,%d/%m -") $(date -d'sunday+'$sunday' days' "+%d/%m")
+	done
+fi
+
