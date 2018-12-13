@@ -32,6 +32,7 @@ class GDriveSpreadSheet
 		// Get our spreadsheet
 		$spreadsheetService = new Google\Spreadsheet\SpreadsheetService();
 		$spreadsheetFeed = $spreadsheetService->getSpreadsheets();
+		var_dump($spreadsheetFeed->getEntries());
 		$spreadsheet = $spreadsheetFeed->getByTitle($sName);
 
 		if($spreadsheet === NULL) die(sprintf("fichier non trouvé ou non accessible (%s)\n", $sName));
