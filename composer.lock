@@ -4,24 +4,24 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "c2c041f21b0005f2cfe089fa76af72ae",
+    "content-hash": "f235a2bc712c40584be5230141931cd8",
     "packages": [
         {
             "name": "asimlqt/php-google-spreadsheet-client",
-            "version": "2.3.7",
+            "version": "v3.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/asimlqt/php-google-spreadsheet-client.git",
-                "reference": "05527b328b2cf08c4b1992bdb531116305c1b711"
+                "reference": "fb82cdc12e6cef559a8f1e42dc26e0905f565055"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/asimlqt/php-google-spreadsheet-client/zipball/05527b328b2cf08c4b1992bdb531116305c1b711",
-                "reference": "05527b328b2cf08c4b1992bdb531116305c1b711",
+                "url": "https://api.github.com/repos/asimlqt/php-google-spreadsheet-client/zipball/fb82cdc12e6cef559a8f1e42dc26e0905f565055",
+                "reference": "fb82cdc12e6cef559a8f1e42dc26e0905f565055",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.0"
+                "php": ">=5.6.0"
             },
             "require-dev": {
                 "phpunit/phpunit": "4.4.2"
@@ -41,12 +41,6 @@
                     "name": "Asim Liaquat",
                     "email": "asimlqt22@gmail.com",
                     "role": "Developer"
-                },
-                {
-                    "name": "Martin Czygan",
-                    "email": "martin.czygan@gmail.com",
-                    "homepage": "http://twitter.com/cvvfj",
-                    "role": "Packager"
                 }
             ],
             "description": "Google Spreadsheet PHP Client",
@@ -55,7 +49,7 @@
                 "google",
                 "spreadsheet"
             ],
-            "time": "2015-12-13T15:13:17+00:00"
+            "time": "2016-11-09T07:43:08+00:00"
         },
         {
             "name": "firebase/php-jwt",
@@ -164,16 +158,16 @@
         },
         {
             "name": "google/apiclient-services",
-            "version": "v0.77",
+            "version": "v0.80",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-api-php-client-services.git",
-                "reference": "f16907e09b5529cd92b109cfdadcd5260691a477"
+                "reference": "cb86c0001e6b757753b6a2efed837e4b899bddb3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/f16907e09b5529cd92b109cfdadcd5260691a477",
-                "reference": "f16907e09b5529cd92b109cfdadcd5260691a477",
+                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/cb86c0001e6b757753b6a2efed837e4b899bddb3",
+                "reference": "cb86c0001e6b757753b6a2efed837e4b899bddb3",
                 "shasum": ""
             },
             "require": {
@@ -197,7 +191,7 @@
             "keywords": [
                 "google"
             ],
-            "time": "2018-12-08T00:22:54+00:00"
+            "time": "2019-01-07T00:22:56+00:00"
         },
         {
             "name": "google/auth",
@@ -701,16 +695,16 @@
         },
         {
             "name": "phpseclib/phpseclib",
-            "version": "2.0.12",
+            "version": "2.0.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "8814dc7841db159daed0b32c2b08fb7e03c6afe7"
+                "reference": "42603ce3f42a27f7e14e54feab95db7b680ad473"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/8814dc7841db159daed0b32c2b08fb7e03c6afe7",
-                "reference": "8814dc7841db159daed0b32c2b08fb7e03c6afe7",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/42603ce3f42a27f7e14e54feab95db7b680ad473",
+                "reference": "42603ce3f42a27f7e14e54feab95db7b680ad473",
                 "shasum": ""
             },
             "require": {
@@ -789,7 +783,7 @@
                 "x.509",
                 "x509"
             ],
-            "time": "2018-11-04T05:45:48+00:00"
+            "time": "2018-12-16T17:45:25+00:00"
         },
         {
             "name": "psr/cache",
