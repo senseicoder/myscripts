@@ -32,7 +32,7 @@ class GDriveSpreadSheet
 
 		// Get our spreadsheet
 		$spreadsheetService = new Google\Spreadsheet\SpreadsheetService();
-		return $spreadsheetService->getSpreadsheetFeed();
+		return $spreadsheetService->getSpreadsheets();
 	}
 
 	function GetSpreadSheet($sName)

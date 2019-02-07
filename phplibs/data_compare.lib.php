@@ -6,8 +6,15 @@ function AnalysesSQL($oDB, array $aAnalyses)
 		$aResult = $oDB->Query($sSQL);
 		if(count($aResult)) {
 			$aDisplay = array();
-			foreach($aResult as $aRec) $aDisplay[] = trim($aRec['lib']);
-			printf("%s : %s\n", $sLib, implode(', ', $aDisplay));
+			foreach($aResult as $aRec) $aDisplay[] = ' * ' . trim($aRec['lib']);
+			printf("%s :\n%s\n", $sLib, implode("\n", $aDisplay));
 		}
+	}
+}
+
+function RecodagesSQL($oDB, array $aAnalyses)
+{
+	foreach($aAnalyses as $sSQL) {
+		$oDB->Exec($sSQL);
 	}
 }

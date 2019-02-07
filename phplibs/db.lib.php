@@ -72,9 +72,9 @@ class CDB
 		return $this->Query("select * from $sNom");
 	}
 
-	function Array2Table($sNom, array $aData)
+	function Array2Table($sNom, array $aData, array $aChamps = array())
 	{
-		$aChamps = array_keys($aData[0]);
+		if(empty($aChamps)) $aChamps = array_keys($aData[0]);
 		$aChampsCreate = self::FormatArray($aChamps, '`%s` VARCHAR(255)');
 		$aChampsList = self::FormatArray($aChamps, '`%s`');
 
