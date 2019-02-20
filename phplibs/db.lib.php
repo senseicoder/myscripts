@@ -35,11 +35,25 @@ class CDB
 		}
 	}
 
+	function TableExists($sTable)
+	{
+		$a = $this->Query("show tables like '" . $sTable . "'");
+		return ! empty($a);
+	}
+
 	function Recreate($sTableName, array $aFields)
 	{
 		$this->Exec('drop table if exists ' . $sTableName);
 		$sSQL = sprintf('create table %s(%s)', $sTableName, implode(',', $aFields));
 		$this->Exec($sSQL);
+	}
+
+	function CreateIfNotExists($sTableName, array $aFields)
+	{
+		if( ! $this->TableExists($sTableName, $aFields)) {
+			$sSQL = sprintf('create table %s(%s)', $sTableName, implode(',', $aFields));
+			$this->Exec($sSQL);
+		}
 	}
 
 	function ReCreateDatabase($sDBName)
@@ -80,7 +94,7 @@ class CDB
 
 		$nb = 0;
 		$sTable = $sNom;
-		$this->Recreate($sTable, $aChampsCreate);
+		$this->CreateIfNotExists($sTable, $aChampsCreate);
 		foreach($aData as $aLine) {
 			$aValues = self::FormatArray($aLine, '"%s"', $aChamps);
 			$this->Exec(sprintf('insert into %s(%s) values(%s)', $sTable, implode(',', $aChampsList), implode(',', $aValues)));
