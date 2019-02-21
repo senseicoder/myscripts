@@ -1,0 +1,17 @@
+#!/bin/bash
+if [ "$1" == 'help' ]; then
+	echo "$0 CVE-2019-7308 : créé une nouvelle page CVE"
+else
+	if [ ! -n "$1" ]; then
+		echo "usage: $0 CVE-2019-7308"
+	else
+		cve=$1
+
+		cd ~/Sync/infra-doctech.wiki
+		git pull 
+		cp CVE-template.md $cve.md
+		git add $cve.md
+		git commit -m "creation CVE-2019-7308"
+		git push
+	fi
+fi
