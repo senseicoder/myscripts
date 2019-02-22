@@ -10,8 +10,9 @@ else
 		cd ~/Sync/infra-doctech.wiki
 		git pull 
 		cp CVE-template.md $cve.md
+		sed -e 's/#CVE#/'$cve'/' -i $cve.md
 		git add $cve.md
-		git commit -m "creation CVE-2019-7308"
+		git commit -m "creation $cve"
 		git push
 	fi
 fi
