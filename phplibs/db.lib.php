@@ -41,6 +41,13 @@ class CDB
 		return ! empty($a);
 	}
 
+	function Truncate($sTable)
+	{
+		if($this->TableExists($sTable)) {
+			$this->Exec("truncate $sTable");
+		}
+	}
+
 	function Recreate($sTableName, array $aFields)
 	{
 		$this->Exec('drop table if exists ' . $sTableName);
@@ -86,16 +93,23 @@ class CDB
 		return $this->Query("select * from $sNom");
 	}
 
-	function Array2Table($sNom, array $aData, array $aChamps = array())
+	function Array2Table($sNom, array $aData, array $aChamps = array(), $bForceRecreate = FALSE)
 	{
+		$sTable = $sNom;
 		if(empty($aData)) return 0;
 		if(empty($aChamps)) $aChamps = array_keys($aData[0]);
 		$aChampsCreate = self::FormatArray($aChamps, '`%s` VARCHAR(255)');
 		$aChampsList = self::FormatArray($aChamps, '`%s`');
 
+		if($bForceRecreate) {
+			$this->Recreate($sTable, $aChampsCreate);
+		}
+		else 
+		{
+			$this->CreateIfNotExists($sTable, $aChampsCreate);
+		}
+
 		$nb = 0;
-		$sTable = $sNom;
-		$this->CreateIfNotExists($sTable, $aChampsCreate);
 		foreach($aData as $aLine) {
 			$aValues = self::FormatArray($aLine, '"%s"', $aChamps);
 			$this->Exec(sprintf('insert into %s(%s) values(%s)', $sTable, implode(',', $aChampsList), implode(',', $aValues)));
