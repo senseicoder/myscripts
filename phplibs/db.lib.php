@@ -97,7 +97,11 @@ class CDB
 	{
 		$sTable = $sNom;
 		if(empty($aData)) return 0;
-		if(empty($aChamps)) $aChamps = array_keys($aData[0]);
+		if(empty($aChamps)) {
+			reset($aData);
+			$a = current($aData);
+			$aChamps = array_keys($a);
+		}
 		$aChampsCreate = self::FormatArray($aChamps, '`%s` VARCHAR(255)');
 		$aChampsList = self::FormatArray($aChamps, '`%s`');
 
