@@ -1,0 +1,15 @@
+#!/bin/bash
+if [ "$1" == 'help' ]; then
+	echo "$0 fichier : nettoie les urls selon les patterns et donne les mots fréquents"
+else
+	if [ ! -e "$1" ]; then
+		echo "usage: $0 fichier"
+	else
+		newfile=$1.filtered
+		sort $1 | grep -vFf ~/bin/data/urls_grep_patterns > $newfile
+		wc -l $1 $newfile |grep -v total
+		echo 
+		tr -sc '_\-.A-Za-z' '\n' < $newfile | sort | uniq -c | sort -n -r|head -50
+	fi
+fi
+
