@@ -1,13 +1,22 @@
 #!/bin/bash
 
-file=$(realpath "$1")
+basedir=~/Work/arkopen
 
+if [ "$1" == "ls" ]; then
+	ls $basedir
+	exit 0
+elif [ "$1" == "clean" ]; then
+	rm -r $basedir/*
+	exit 0
+fi
+
+file=$(realpath "$1")
 if [ -z "$file" ]; then 
 	echo "$0 fichier"
 	exit 1
 fi
 
-dest=~/Work/arkopen/$(basename "$file" | sed 's/[.][a-z]*$//g')
+dest=$basedir/$(basename "$file" | sed 's/[.][a-z]*$//g')
 if [ -d "$dest" ]; then 
 	echo "le dossier $dest existe déjà"
 	exit 1
@@ -15,7 +24,7 @@ fi
 
 type=''
 filetype=$(file "$file")
-for filtre in Zip RPM Debian tar; do 
+for filtre in Zip RPM Debian tar 7-zip; do 
 	echo $filetype | grep $filtre &>/dev/null
 	if [ $? -eq 0 ]; then type=$filtre; fi
 done
@@ -61,11 +70,16 @@ if [ ! -z "$type" ]; then
 		tar -xjf "$file"
 		;;
 
+	7-zip)
+		7z e -o"$dest" "$file"
+		;;
+
 	*)
 		echo "format non géré : $type"
 	esac
 
-	echo "cd $dest"
+	echo "cd '$dest'" | xclip -selection clipboard
+	echo "cd '$dest' (cd ctrl+c)"
 else
 	echo "format non géré : $filetype"
 fi
