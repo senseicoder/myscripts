@@ -1,6 +1,10 @@
 #!/bin/bash
 #note: doit être lancé en root
 
+#installation: 
+# sudo rm /etc/cron.daily/ocsinventory-agent
+# sudo ln -s /home/cedric/bin/public/ocsinventory.sh /etc/cron.hourly/ocsinventory
+
 log=/var/log/epiconcept/ocsinventory.log
 okfortheday=/var/run/ocsinventory
 
