@@ -1,0 +1,1 @@
+cat $1 | gpg --decrypt | sed -e 'N; s/=[ ]*\n//g' -e 's/[\t   ]+/ /g' -e 's/<[^>]*>//g' | grep -v '^[ ]*$'
