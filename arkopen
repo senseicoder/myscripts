@@ -79,7 +79,7 @@ if [ ! -z "$type" ]; then
 	esac
 
 	echo "cd '$dest'" | xclip -selection clipboard
-	echo "cd '$dest' (cd ctrl+c)"
+	echo "cd '$dest' (ctrl+v)"
 else
 	echo "format non géré : $filetype"
 fi
