@@ -1,0 +1,6 @@
+#!/bin/bash
+
+tmp=$(tempfile)
+vi $tmp
+sed -e '/^$/d' -e 's/^/\t/g' $tmp | xclip -selection clipboard
+rm $tmp
