@@ -14,6 +14,6 @@ else
 		git add $cve.md
 		git commit -m "creation $cve"
 		git push
-		xdg-open "https://github.com/Epiconcept-Paris/infra-doctech/wiki/$cve"
+		xdg-open "https://github.com/Epiconcept-Paris/infra-doctech/wiki/$cve/_edit"
 	fi
 fi
