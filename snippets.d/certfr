@@ -1,0 +1,19 @@
+#!/bin/bash
+if [ "$1" == 'help' ]; then
+	echo "$0 CERTFR-2019-AVI-208 : créé une nouvelle page vulnérabilité CERTFR"
+else
+	if [ ! -n "$1" ]; then
+		echo "usage: $0 CERTFR-2019-AVI-208"
+	else
+		id=$1
+
+		cd ~/Sync/infra-doctech.wiki
+		git pull 
+		cp CERTFR-template.md $id.md
+		sed -e 's/#ID#/'$id'/' -i $cve.md
+		git add $id.md
+		git commit -m "creation $id"
+		git push
+		xdg-open "https://github.com/Epiconcept-Paris/infra-doctech/wiki/$id/_edit"
+	fi
+fi
