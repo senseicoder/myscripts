@@ -1,0 +1,14 @@
+#!/bin/bash
+if [ "$1" == 'help' ]; then
+	echo "$0 package [population] : renseigne sur la présence d'un paquet"
+else
+	if [ ! -n "$1" ]; then
+		echo "usage: $0 apache2 frontaux|bdd|..."
+	else
+		package=$1
+		population=$2
+		if [ -z "$population" ]; then population='all'; fi
+
+		ansible $population -i ~/bin/list_new_servers.txt --one-line -m shell -a "aptitude search $package | grep ^i" | grep 'rc=0'
+	fi
+fi
