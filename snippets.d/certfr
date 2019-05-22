@@ -9,11 +9,16 @@ else
 
 		cd ~/Sync/infra-doctech.wiki
 		git pull 
-		cp CERTFR-template.md $id.md
-		sed -e 's/#ID#/'$id'/' -i $cve.md
-		git add $id.md
-		git commit -m "creation $id"
-		git push
+		if [ -f "$id.md" ]; then 
+			echo "le fichier $id.md existe déjà"
+			exit 1
+		else
+			cp CERTFR-template.md $id.md
+			sed -e 's/#ID#/'$id'/' -i $id.md
+			git add $id.md
+			git commit -m "creation $id"
+			git push
+		fi
 		xdg-open "https://github.com/Epiconcept-Paris/infra-doctech/wiki/$id/_edit"
 	fi
 fi

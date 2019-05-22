@@ -9,11 +9,16 @@ else
 
 		cd ~/Sync/infra-doctech.wiki
 		git pull 
-		cp CVE-template.md $cve.md
-		sed -e 's/#CVE#/'$cve'/' -i $cve.md
-		git add $cve.md
-		git commit -m "creation $cve"
-		git push
+		if [ -f "$cve.md" ]; then 
+			echo "le fichier $cve.md existe déjà"
+			exit 1
+		else
+			cp CVE-template.md $cve.md
+			sed -e 's/#CVE#/'$cve'/' -i $cve.md
+			git add $cve.md
+			git commit -m "creation $cve"
+			git push
+		fi
 		xdg-open "https://github.com/Epiconcept-Paris/infra-doctech/wiki/$cve/_edit"
 	fi
 fi
