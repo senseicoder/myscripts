@@ -1,0 +1,27 @@
+#!/bin/bash
+if [ "$1" == 'help' ]; then
+	echo "$0 chemin_projet : créé un projet Sublimtext s'il n'existe pas et l'ouvre"
+else
+	if [ ! -d "$1" ]; then
+		echo "usage: $0 cheminscript [frontaux|bdd|...]"
+		exit 0
+	fi
+
+	path=$(realpath $1)
+	file="/home/cedric/Sync/Dossiers/Dev/Subl/$(basename $path).sublime-project"
+	if [ -f $file ]; then
+		echo "le projet $file existe déjà"
+	else
+		cat <<FIN > $file
+{
+	"folders":
+	[
+		{
+			"path": "$path"
+		}
+	]
+}
+FIN
+		subl $file
+	fi
+fi
