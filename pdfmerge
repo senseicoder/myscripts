@@ -39,7 +39,7 @@ PS3='Fichier correct ? > '   # le prompt
 LISTE=("[o]ui" "[n]on")  # liste de choix disponibles
 select CHOIX in "${LISTE[@]}" ; do
 	case $REPLY in
-		1|o) rm $sourcesorig; break;;
+		1|o) rm "$sourcesorig"; break;;
 		2|n) echo "à gérer à la main : $sourcesorig"; break;;
 	esac
 done
