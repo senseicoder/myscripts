@@ -1,0 +1,18 @@
+#!/bin/bash
+
+file=~/.config/sublime-text-3/Local/Session.sublime_session
+echo "fichier $file"
+
+for workspace in $(cat $file |jq '.workspaces.recent_workspaces' |sed -e 1d -e \$d -e 's/[ ]*"[,]*//g'); do 
+	if [ ! -f "$workspace" ]; then 
+		echo "workspace inexistant: $workspace"
+		sed -ie "\#$workspace#d" $file
+	else
+		project=${workspace/sublime-workspace/sublime-project}
+		if [ ! -f "$project" ]; then
+			echo "workspace sans project: $workspace"
+			rm $workspace
+			sed -ie "\#$workspace#d" $file
+		fi
+	fi
+done
