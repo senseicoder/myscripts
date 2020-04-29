@@ -4,6 +4,6 @@ tmp=$(tempfile)
 vi $tmp
 
 for i in $(grep -Eo 'CVE-[0-9]+-[0-9]+' $tmp |sort|uniq); do
-        echo https://security-tracker.debian.org/tracker/$i
+        echo "* https://security-tracker.debian.org/tracker/$i"
 done | xclip -selection clipboard
 rm $tmp
