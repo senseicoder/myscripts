@@ -1,0 +1,19 @@
+#!/bin/bash
+if [ "$1" == 'help' ]; then
+	echo "$0 prefnt1 www/e/infra-io-scripts-uniux/tous/truc.sh : envoyer un script à un serveur ou groupe de serveur"
+else
+	if [ ! -n "$2" ]||[ ! -f "$2" ]; then
+		echo "usage: $0 <serveur> <fichier>"
+	else
+		serveurs=$1
+		script=$2
+		nomscript=$(basename $script)
+
+		ansible $serveurs -i ~/bin/list_new_servers.txt --list-hosts
+		sleep 10
+		ansible $serveurs -i ~/bin/list_new_servers.txt -b -m copy -a "src=$script dest=/usr/local/bin/$nomscript mode=0755 owner=root group=root" -D
+	fi
+fi
+
+
+
