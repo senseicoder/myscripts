@@ -1,4 +1,14 @@
+#TODO
+#extraire la date
+#prendre des params
+#lister les blocs
+#extraire kifs et done dans des fichiers archives (sauf ceux du jour)
+#pouvoir retrier un bloc quelconque vers prj (comme un fichier texte)
+#pouvoir retrier un bloc quelconque vers les autres blocs
+
 import re
+import pprint
+pp = pprint.PrettyPrinter(indent=1)
 from enum import Enum
 
 pathEncours = "/home/cedric/Sync/Central/Dossiers/Suivis/encours.txt"
@@ -34,6 +44,8 @@ class ST(MyEnum):
 
 def switchOut():
 	global nature
+	global aBlocks
+
 	switcher={
 		NL.INCONNUE: 	ST.ERR,
 		NL.TITRE: 		ST.BLOCK,
@@ -44,7 +56,11 @@ def switchOut():
 		NL.COMMENT: 	ST.ERR,
 		NL.REMS:		ST.OUT
 	}
-	return switcher.get(nature, "invalid NL for switchOut")
+	result = switcher.get(nature, "invalid NL for switchOut")
+	if(result == ST.BLOCK):
+		aBlocks.append({'titre': line, 'nature': nature, 'tasks': []})
+		idBlock = len(aBlocks) - 1
+	return result
 
 def switchBlock():
 	global nature
@@ -58,10 +74,17 @@ def switchBlock():
 		NL.COMMENT: 	ST.ERR,
 		NL.REMS:		ST.BLOCK
 	}
-	return switcher.get(nature, "invalid NL for switchBlock")
+	result = switcher.get(nature, "invalid NL for switchBlock")
+	if(result == ST.TASK):
+		aBlocks[idBlock]['tasks'].append({'task': line, 'comments': []})
+	return result
 
 def switchTask():
 	global nature
+	global aBlocks
+	global idBlock
+	global idTask
+
 	switcher={
 		NL.INCONNUE: 	ST.ERR,
 		NL.TITRE: 		ST.TASK,
@@ -72,10 +95,20 @@ def switchTask():
 		NL.COMMENT: 	ST.COMMENT,
 		NL.REMS:		ST.TASK
 	}
-	return switcher.get(nature, "invalid NL for switchTask")
+	result = switcher.get(nature, "invalid NL for switchTask")
+	if(result == ST.TASK):
+		aBlocks[idBlock]['tasks'].append({'task': line, 'comments': []})
+		idTask = len(aBlocks[idBlock]['tasks']) - 1
+	if(result == ST.COMMENT):
+		aBlocks[idBlock]['tasks'][idTask]['comments'].append(line)
+	return result
 
 def switchComment():
 	global nature
+	global aBlocks
+	global idBlock
+	global idTask
+
 	switcher={
 		NL.INCONNUE: 	ST.ERR,
 		NL.TITRE: 		ST.TASK,
@@ -86,24 +119,28 @@ def switchComment():
 		NL.COMMENT: 	ST.COMMENT,
 		NL.REMS:		ST.COMMENT
 	}
-	return switcher.get(nature, "invalid NL for switchTask")
+	result = switcher.get(nature, "invalid NL for switchTask")
+	if(result == ST.TASK):
+		aBlocks[idBlock]['tasks'].append({'task': line, 'comments': []})
+	if(result == ST.COMMENT):
+		aBlocks[idBlock]['tasks'][idTask]['comments'].append(line)
+	return result
 
 def switchErr():
 	print('erreur execution')
 
-aBlocks = {}
-oBlock = {}
+aBlocks = []
+idBlock = -1
+idTask = -1
 
 state = ST.OUT
 prevstate = ST.OUT
 with open(pathEncours) as handle:
 	for line in handle:
-		#line = line.rstrip()
-
 		nature = NL.INCONNUE
-		if rexTitre.match(line): nature = NL.TITRE
-		elif rexDone.match(line): nature = NL.DONE
+		if rexDone.match(line): nature = NL.DONE
 		elif rexKifs.match(line): nature = NL.KIFS
+		elif rexTitre.match(line): nature = NL.TITRE
 		elif rexVide.match(line): nature = NL.VIDE
 		elif rexComment.match(line): nature = NL.COMMENT
 		elif rexRems.match(line): nature = NL.REMS
@@ -122,3 +159,6 @@ with open(pathEncours) as handle:
 
 		print(repr(nature) + ' (' + repr(prevstate) + '=>' + repr(state) + '): ' + line.rstrip())
 
+#print(aBlocks)
+pp.pprint(aBlocks[1])
+pp.pprint(aBlocks[8])
