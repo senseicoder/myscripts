@@ -1,4 +1,5 @@
 #TODO
+#encours calcul id au besoin pas de cache plus fiable et perte négligeable, cache cause de bugs
 #extraire la date
 #prendre des params
 #lister les blocs
