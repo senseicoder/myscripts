@@ -172,11 +172,6 @@ with open(pathEncours) as handle:
 		print(repr(nature) + ' (' + repr(prevstate) + '=>' + repr(state) + '): ' + line.rstrip())
 
 #print(aBlocks)
-<<<<<<< HEAD
-pp.pprint(aBlocks[1])
-pp.pprint(aBlocks[8])
-=======
 #pp.pprint(aBlocks[1])
 #pp.pprint(aBlocks[8])
 pp.pprint(aBlocks[15])
->>>>>>> 74247b66723a5a5a8ac17c8ed71e651c63b04f3f
