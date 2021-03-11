@@ -11,15 +11,15 @@ function AnalysesSQL($oDB, array $aAnalyses, $bDebug = FALSE, $sForme = formeCLI
 
 	foreach($aAnalyses as $sLib => $sSQL) if( ! empty($sSQL)) {
 		$aResult = $oDB->Query($sSQL);
+		if($bDebug) printf("=== SQL: %s\n", $sSQL);
 		if(count($aResult)) {
 			$aDisplay = array();
 			foreach($aResult as $aRec) $aDisplay[] = trim($aRec['lib']);
-			if($bDebug) printf("=== SQL: %s\n", $sSQL);
 			switch($sForme)
 			{
 				case formeCLI: 
 					foreach($aDisplay as & $sValue) $sValue = ' * ' . $sValue;
-					$sOut .= printf("%s :\n%s\n", $sLib, implode("\n", $aDisplay)); 
+					$sOut .= sprintf("%s :\n%s\n", $sLib, implode("\n", $aDisplay)); 
 					break;	
 				case formeJSON: 
 					foreach($aDisplay as $sValue) {

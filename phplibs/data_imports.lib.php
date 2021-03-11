@@ -9,7 +9,7 @@ function CSVToArray(array $aResult, array $aChamps, $iNbHeaders = 1, $cSeparator
 			if(is_string($aLine)) $aLine = explode($cSeparator, $aLine);
 			foreach($aLine as $id => $sValue) {
 				if($sValue === 'NULL') $a[$aChamps[$id]] = NULL;
-				else $a[$aChamps[$id]] = $sValue;
+				else $a[$aChamps[$id]] = str_replace("\n", " ", $sValue);
 			}
 			$aData[] = $a;
 		}
@@ -17,24 +17,28 @@ function CSVToArray(array $aResult, array $aChamps, $iNbHeaders = 1, $cSeparator
 	return $aData;
 }
 
-function LoadCSV($pathCSV)
+function LoadCSV($pathCSV, $iIgnoreHeadersLines = 0)
 {
 	$iNbHeaders = 1;
 	$cSeparator = ',';
 
 	$aLines = array();
 	$f = fopen($pathCSV, 'r');
+	$nbLine = 1;
 	while($a = fgetcsv($f, 0, $cSeparator)) {
-		//var_dump($a);
-		#$a[count($a)-1] = trim($a[count($a)-1]):
-		$aLines[] = $a;
+		if($nbLine > $iIgnoreHeadersLines) $aLines[] = $a;
+		$nbLine++;
 	}
 
 	#$aLines = file($pathCSV);
 	$aChamps = $aLines[0];
 	unset($aLines[0]);
 
-	foreach($aChamps as & $sChamp) $sChamp = trim(preg_replace('/[^a-zA-Z0-9_]/', '_', $sChamp), '_');
+	foreach($aChamps as $id => & $sChamp) {
+		$sChamp = iconv('UTF-8', 'ASCII//TRANSLIT', $sChamp);
+		$sChamp = trim(preg_replace('/[^a-zA-Z0-9_]/', '_', $sChamp), '_');
+		if(empty($sChamp)) $sChamp = 'inconnu'.$id;
+	}
 	return CSVToArray($aLines, $aChamps, $iNbHeaders, $cSeparator);
 }
 
