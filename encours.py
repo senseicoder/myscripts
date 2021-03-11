@@ -46,6 +46,8 @@ class ST(MyEnum):
 def switchOut():
 	global nature
 	global aBlocks
+	global idBlock
+	global idTask
 
 	switcher={
 		NL.INCONNUE: 	ST.ERR,
@@ -65,6 +67,10 @@ def switchOut():
 
 def switchBlock():
 	global nature
+	global aBlocks
+	global idBlock
+	global idTask
+
 	switcher={
 		NL.INCONNUE: 	ST.ERR,
 		NL.TITRE: 		ST.TASK,
@@ -78,6 +84,7 @@ def switchBlock():
 	result = switcher.get(nature, "invalid NL for switchBlock")
 	if(result == ST.TASK):
 		aBlocks[idBlock]['tasks'].append({'task': line, 'comments': []})
+		idTask = -1
 	return result
 
 def switchTask():
@@ -100,7 +107,9 @@ def switchTask():
 	if(result == ST.TASK):
 		aBlocks[idBlock]['tasks'].append({'task': line, 'comments': []})
 		idTask = len(aBlocks[idBlock]['tasks']) - 1
+		print("idTask+ " + str(idTask))
 	if(result == ST.COMMENT):
+		print("idTask cmt " + str(idTask))
 		aBlocks[idBlock]['tasks'][idTask]['comments'].append(line)
 	return result
 
@@ -125,11 +134,13 @@ def switchComment():
 		aBlocks[idBlock]['tasks'].append({'task': line, 'comments': []})
 	if(result == ST.COMMENT):
 		aBlocks[idBlock]['tasks'][idTask]['comments'].append(line)
+		idTask = len(aBlocks[idBlock]['tasks']) - 1
 	return result
 
 def switchErr():
 	print('erreur execution')
 
+print("init")
 aBlocks = []
 idBlock = -1
 idTask = -1
@@ -161,5 +172,11 @@ with open(pathEncours) as handle:
 		print(repr(nature) + ' (' + repr(prevstate) + '=>' + repr(state) + '): ' + line.rstrip())
 
 #print(aBlocks)
+<<<<<<< HEAD
 pp.pprint(aBlocks[1])
 pp.pprint(aBlocks[8])
+=======
+#pp.pprint(aBlocks[1])
+#pp.pprint(aBlocks[8])
+pp.pprint(aBlocks[15])
+>>>>>>> 74247b66723a5a5a8ac17c8ed71e651c63b04f3f
