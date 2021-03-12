@@ -1,10 +1,10 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 import requests
-from requests.auth import HTTPDigestAuth
+#from requests.auth import HTTPDigestAuth
 
-import pprint
-pp = pprint.PrettyPrinter(indent=1)
+#import pprint
+#pp = pprint.PrettyPrinter(indent=1)
 
 import re
 rexDebPack = re.compile(r'^.*[.]deb$')
@@ -37,12 +37,9 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 		f.close()
 
 	def passthru(self, uri, store):
-		global source 
-
 		finished=False
-		url = urlapt + uri
 		if store is not None:
-			sourcepath=source+os.path.basename(store)
+			sourcepath=self.server._pathSource+os.path.basename(store)
 			if os.path.isfile(sourcepath):
 				print('fromsource '+store)
 				self.fromdisk(sourcepath)
@@ -53,7 +50,8 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 				finished=True
 
 		if not finished:
-			print('download '+uri)
+			url = self.server._urlSrc + '/' + uri
+			print('download '+url)
 			r = requests.get(url, allow_redirects=True)
 			if store is not None:
 				print('store '+store)
@@ -65,19 +63,24 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 			self.answer(r.status_code, r.content, r.headers['content-length'])
 
 	def do_GET(self):
-		global stockage 
-
-		if rexDebPack.match(self.path.rstrip()):
-			self.passthru(uri=self.path, store=stockage + self.path)
+		if rexDebPack.match(self.path):
+			self.passthru(uri=self.path, store=self.server._pathBase + self.path)
 		else:
 			self.passthru(uri=self.path, store=None)
 
+class MyHTTPServer(HTTPServer):
+	def setPathBase(self, path):
+		self._pathBase = path
+		self._pathSource = path + '/sources'
+		if not os.path.isdir(self._pathSource): os.makedirs(self._pathSource)
+
+	def setUrlSrc(self, url):
+		self._urlSrc = url
+
 def main(argv):
-	global port
-	global urlapt
-	global pathbase
-	global stockage
-	global source
+	port=8000
+	pathbase='/home/cedric/aptdevproxy/'
+	urlapt='https://apt.epiconcept.fr'
 
 	help='aptdevproxy.py -p <port> -d <path cache> -u https://apt.epiconcept.fr'
 	try:
@@ -94,17 +97,10 @@ def main(argv):
 		elif opt in ("-u", "--url"): urlapt = arg
 	print('port '+str(port)+' dir '+pathbase+' url '+urlapt)
 
-	stockage=pathbase+'repos'
-	source=pathbase+'source/'
-
-	httpd = HTTPServer(('', int(port)), SimpleHTTPRequestHandler)
+	httpd = MyHTTPServer(('', int(port)), SimpleHTTPRequestHandler)
+	httpd.setPathBase(pathbase)
+	httpd.setUrlSrc(urlapt)
 	httpd.serve_forever()
-
-port=8000
-urlapt='https://apt.epiconcept.fr'
-pathbase='/home/cedric/aptdevproxy/'
-stockage=''
-source=''
 
 if __name__ == "__main__":
    main(sys.argv[1:])
