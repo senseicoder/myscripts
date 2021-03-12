@@ -11,6 +11,12 @@ rexDebPack = re.compile(r'^.*[.]deb$')
 
 import os, sys, getopt
 
+#todo
+#prendre un fichier avec toutes les confs, multi repos
+#faire marcher repo security
+#tester avec mdm
+
+#sources
 #n'a pas marché (j'ai autorisé mon IP sur APT) : https://requests.readthedocs.io/en/master/user/authentication/
 #problème NODATA : https://askubuntu.com/questions/474549/got-nodata-issue-nodata-does-the-network-require-authentication
 #request : https://www.tutorialspoint.com/downloading-files-from-web-using-python
@@ -18,7 +24,7 @@ import os, sys, getopt
 #cli args : https://www.tutorialspoint.com/python/python_command_line_arguments.htm
 
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
-	def anwser(self, code, content, length):
+	def answer(self, code, content, length):
 		self.send_response(code)
 		#self.send_header('content-type', r.headers['content-type'])
 		self.send_header('content-length', length)
@@ -27,7 +33,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
 	def fromdisk(self, path):
 		f = open(path, "rb")
-		self.anwser(200, f.read(), os.path.getsize(path))
+		self.answer(200, f.read(), os.path.getsize(path))
 		f.close()
 
 	def passthru(self, uri, store):
@@ -56,7 +62,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 				f = open(store, "wb")
 				f.write(r.content)
 				f.close()
-			self.anwser(r.status_code, r.content, r.headers['content-length'])
+			self.answer(r.status_code, r.content, r.headers['content-length'])
 
 	def do_GET(self):
 		global stockage 
