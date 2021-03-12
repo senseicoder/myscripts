@@ -6,8 +6,8 @@ import requests
 #import pprint
 #pp = pprint.PrettyPrinter(indent=1)
 
-import re
-rexDebPack = re.compile(r'^.*[.]deb$')
+#import re
+#rexDebPack = re.compile(r'^.*[.]deb$')
 
 import os, sys, getopt
 
@@ -39,7 +39,8 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 	def passthru(self, uri, store):
 		finished=False
 		if store is not None:
-			sourcepath=self.server._pathSource+os.path.basename(store)
+			sourcepath=self.server._pathSource+'/'+os.path.basename(store)
+			print("sourcepath "+sourcepath)
 			if os.path.isfile(sourcepath):
 				print('fromsource '+store)
 				self.fromdisk(sourcepath)
@@ -63,10 +64,10 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 			self.answer(r.status_code, r.content, r.headers['content-length'])
 
 	def do_GET(self):
-		if rexDebPack.match(self.path):
-			self.passthru(uri=self.path, store=self.server._pathBase + self.path)
-		else:
-			self.passthru(uri=self.path, store=None)
+		#if rexDebPack.match(self.path):
+		self.passthru(uri=self.path, store=self.server._pathBase + self.path)
+		#else:
+		#	self.passthru(uri=self.path, store=None)
 
 class MyHTTPServer(HTTPServer):
 	def setPathBase(self, path):
