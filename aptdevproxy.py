@@ -40,7 +40,6 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 		finished=False
 		if store is not None:
 			sourcepath=self.server._pathSource+'/'+os.path.basename(store)
-			print("sourcepath "+sourcepath)
 			if os.path.isfile(sourcepath):
 				print('fromsource '+store)
 				self.fromdisk(sourcepath)
