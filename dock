@@ -12,6 +12,9 @@ function docker_killrm()
 
 function docker_sweep()
 {
+	#nettoyage lié au build php
+	docker images |grep -E 'epi-(tests|build)-php' | awk '{print $3}' |xargs docker rmi
+
 	local liste=$(docker ps --filter "status=exited" -q |xargs)
 	docker_killrm $liste
 	docker volume ls -qf dangling=true | xargs -r docker volume rm
