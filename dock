@@ -132,6 +132,21 @@ reboot)
         sudo systemctl start docker
 	;;
 
+status)
+	echo "containers"
+	for i in $(docker ps |sed 1d|awk '{ print $1}'); do docker inspect $i -f '{{ .Name }} : {{range $k,$v:=.NetworkSettings.Networks}}{{$k}}:{{.IPAddress}} {{end}}'; done
+	echo -e "\ndocker ps -a"
+	docker ps -a
+	
+	echo -e "\nnetworks"
+	for i in $(docker network ls |sed 1d|awk '{ print $1}'); do docker network inspect -f '{{.Name}} : {{range .IPAM.Config}}{{.Gateway}} {{end}} / {{range .Containers}}{{.Name}}:{{.IPv4Address}} {{end}}' $i; done
+	echo -e "\ndocker network ls"
+	docker network ls
+	
+	echo -e "\ndocker volume ls"
+	docker volume ls
+	;;
+
 *)
 	echo 'dock clean $vm|sweep|cleanall|resetrzo|ipa|logs|reboot'
 esac
