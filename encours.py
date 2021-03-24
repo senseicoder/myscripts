@@ -7,6 +7,7 @@
 #pouvoir retrier un bloc quelconque vers prj (comme un fichier texte)
 #pouvoir retrier un bloc quelconque vers les autres blocs
 
+import os, sys, getopt
 import re
 import pprint
 pp = pprint.PrettyPrinter(indent=1)
@@ -140,38 +141,72 @@ def switchComment():
 def switchErr():
 	print('erreur execution')
 
-print("init")
-aBlocks = []
-idBlock = -1
-idTask = -1
 
-state = ST.OUT
-prevstate = ST.OUT
-with open(pathEncours) as handle:
-	for line in handle:
-		nature = NL.INCONNUE
-		if rexDone.match(line): nature = NL.DONE
-		elif rexKifs.match(line): nature = NL.KIFS
-		elif rexTitre.match(line): nature = NL.TITRE
-		elif rexVide.match(line): nature = NL.VIDE
-		elif rexComment.match(line): nature = NL.COMMENT
-		elif rexRems.match(line): nature = NL.REMS
-		elif rexTask.match(line): nature = NL.TASK
 
-		switcher = {
-			ST.OUT: switchOut,
-			ST.BLOCK: switchBlock,
-			ST.TASK: switchTask,
-			ST.COMMENT: switchComment,
-			ST.ERR: switchErr
-		}
-		func = switcher.get(state)
-		prevstate = state
-		state = func()
+import unittest
 
-		print(repr(nature) + ' (' + repr(prevstate) + '=>' + repr(state) + '): ' + line.rstrip())
+class TestStringMethods(unittest.TestCase):
 
-#print(aBlocks)
-#pp.pprint(aBlocks[1])
-#pp.pprint(aBlocks[8])
-pp.pprint(aBlocks[15])
+    def test_upper(self):
+        self.assertEqual('foo'.upper(), 'FOO')
+
+    def test_false(self):
+        self.assertEqual('foo'.upper(), 'Faa')
+
+class MODE(MyEnum):
+	NORM = 0
+	TU = 1
+
+nature = ""
+
+mode=MODE.NORM
+help='encours.py --tu'
+try:
+	opts, args = getopt.getopt(sys.argv[1:],"h",["tu"])
+except getopt.GetoptError:
+	print(help)
+	sys.exit(2)
+for opt, arg in opts:
+	if opt == '-h':
+		print(help)
+		sys.exit()
+	elif opt in ("--tu"): mode=MODE.TU
+
+if mode==MODE.TU:
+	unittest.main()
+else:
+	print("init")
+	aBlocks = []
+	idBlock = -1
+	idTask = -1
+
+	state = ST.OUT
+	prevstate = ST.OUT
+	with open(pathEncours) as handle:
+		for line in handle:
+			nature = NL.INCONNUE
+			if rexDone.match(line): nature = NL.DONE
+			elif rexKifs.match(line): nature = NL.KIFS
+			elif rexTitre.match(line): nature = NL.TITRE
+			elif rexVide.match(line): nature = NL.VIDE
+			elif rexComment.match(line): nature = NL.COMMENT
+			elif rexRems.match(line): nature = NL.REMS
+			elif rexTask.match(line): nature = NL.TASK
+
+			switcher = {
+				ST.OUT: switchOut,
+				ST.BLOCK: switchBlock,
+				ST.TASK: switchTask,
+				ST.COMMENT: switchComment,
+				ST.ERR: switchErr
+			}
+			func = switcher.get(state)
+			prevstate = state
+			state = func()
+
+			print(repr(nature) + ' (' + repr(prevstate) + '=>' + repr(state) + '): ' + line.rstrip())
+
+	#print(aBlocks)
+	#pp.pprint(aBlocks[1])
+	#pp.pprint(aBlocks[8])
+	pp.pprint(aBlocks[15])
