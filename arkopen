@@ -30,7 +30,7 @@ for filtre in Zip RPM Debian tar 7-zip; do
 done
 
 if [[ "$file" =~ tar.gz ]]||[[ "$file" =~ tgz ]]; then type=targz; fi
-if [[ "$file" =~ tar.bz2 ]]||[[ "$file" =~ tbz2 ]]; then type=tarbz2; fi
+if [[ "$file" =~ tar.bz2 ]]||[[ "$file" =~ tbz2 ]]||[[ "$file" =~ tbz ]]; then type=tarbz2; fi
 
 if [ ! -z "$type" ]; then 
 	mkdir -p "$dest"
