@@ -11,7 +11,6 @@ else
 		if [ ! -f "$src" ]; then echo "fichier $src inexistant"; exit 1; fi
 		dest=/usr/local/bin/$(basename $src)
 
-		#ansible $population -i ~/bin/list_new_servers.txt --one-line -m shell -a "aptitude search $package | grep ^i" | grep 'rc=0'
 		ansible $population -i ~/bin/list_new_servers.txt --one-line --become -m copy -a "src=$src dest=$dest mode=0755 owner=root group=root" -D
 	fi
 fi
