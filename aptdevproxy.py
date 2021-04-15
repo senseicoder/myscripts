@@ -41,7 +41,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 		if store is not None:
 			sourcepath=self.server._pathSource+'/'+os.path.basename(store)
 			if os.path.isfile(sourcepath):
-				print('fromsource '+store)
+				print('fromsource '+sourcepath)
 				self.fromdisk(sourcepath)
 				finished=True
 			elif os.path.isfile(store):
@@ -53,7 +53,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 			url = self.server._urlSrc + '/' + uri
 			print('download '+url)
 			r = requests.get(url, allow_redirects=True)
-			if store is not None:
+			if store is not None and r.status_code == 200:
 				print('store '+store)
 				dir=os.path.dirname(store)
 				if not os.path.isdir(dir): os.makedirs(dir)
@@ -64,7 +64,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
 	def do_GET(self):
 		#if rexDebPack.match(self.path):
-		self.passthru(uri=self.path, store=self.server._pathBase + self.path)
+			self.passthru(uri=self.path, store=self.server._pathBase + self.path)
 		#else:
 		#	self.passthru(uri=self.path, store=None)
 
