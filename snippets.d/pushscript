@@ -8,6 +8,8 @@ else
 		serveurs=$1
 		script=$2
 		nomscript=$(basename $script)
+		basedir=$(basename $(dirname $script))
+		if [ "$basedir" == "norme.d" ]; then nomscript="$basedir/$nomscript"; fi
 
 		ansible $serveurs -i ~/bin/list_new_servers.txt --list-hosts
 		sleep 10
