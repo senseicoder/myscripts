@@ -1,0 +1,19 @@
+#!/bin/bash
+
+set +e
+
+path=$1
+if [ ! -d "$path" ]; then
+	echo "le premier paramètre doit être un dossier existant ($path)"
+	exit 1
+fi
+
+dest="album.mp3"
+
+cd "$path"
+mp3wrap "$dest" *.mp3
+detox *MP3WRAP*.mp3
+rename.ul "_MP3WRAP" "" *.mp3
+cd
+
+echo "récupère $path/album.mp3"
