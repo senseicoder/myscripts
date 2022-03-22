@@ -11,11 +11,8 @@ else
 		basedir=$(basename $(dirname $script))
 		if [ "$basedir" == "norme.d" ] || [ "$basedir" == "state.d" ]; then nomscript="$basedir/$nomscript"; fi
 
-		ansible $serveurs -i ~/bin/list_new_servers.txt --list-hosts
-		sleep 10
+		#ansible $serveurs -i ~/bin/list_new_servers.txt --list-hosts
+		#read
 		ansible $serveurs -i ~/bin/list_new_servers.txt -b -m copy -a "src=$script dest=/usr/local/bin/$nomscript mode=0755 owner=root group=root" -D
 	fi
 fi
-
-
-
