@@ -71,17 +71,19 @@ class CDB
 		$this->mysqli->select_db($sDBName);	
 	}
 
-	private function FormatArray(array $in, $sFormat, array $aChamps = array())
+	private function FormatArray(array $in, $sFormat, array $aChamps = array(), array $aEscape = array())
 	{
 		$aOut = array();
 		if(empty($aChamps)) {
 			foreach($in as $sValue) {
+				foreach($aEscape as $c) $sValue = str_replace($c, "\\$c", $sValue);
 				$aOut[] = sprintf($sFormat, $sValue);
 			}
 		}
 		else {
 			foreach($aChamps as $sChamp) {
 				$sValue = isset($in[$sChamp]) ? $in[$sChamp] : '';
+				foreach($aEscape as $c) $sValue = str_replace($c, "\\$c", $sValue);
 				$aOut[] = sprintf($sFormat, $sValue);
 			}
 		}
@@ -115,7 +117,7 @@ class CDB
 
 		$nb = 0;
 		foreach($aData as $aLine) {
-			$aValues = self::FormatArray($aLine, '"%s"', $aChamps);
+			$aValues = self::FormatArray($aLine, '"%s"', $aChamps, array('"'));
 			$this->Exec(sprintf('insert into %s(%s) values(%s)', $sTable, implode(',', $aChampsList), implode(',', $aValues)));
 			$nb++;
 		}		
