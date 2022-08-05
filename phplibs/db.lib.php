@@ -76,6 +76,7 @@ class CDB
 		$aOut = array();
 		if(empty($aChamps)) {
 			foreach($in as $sValue) {
+				$sValue = substr($sValue, 0, 63);
 				foreach($aEscape as $c) $sValue = str_replace($c, "\\$c", $sValue);
 				$aOut[] = sprintf($sFormat, $sValue);
 			}
