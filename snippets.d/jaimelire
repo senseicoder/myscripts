@@ -7,7 +7,6 @@ else
 	pathdest=~/Sync/CNotes/Podcasts/JAimeLire
 	path=$1
 	name=$(basename $path)
-	rm $path/01* $path/*.m3u
 	detox $path/*
 	dest=$pathdest/$name.mp3
 	echo "création $dest"
