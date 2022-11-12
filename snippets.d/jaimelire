@@ -15,5 +15,4 @@ else
 	dest=$pathdest/$name_blagues.mp3
 	echo "création $dest"
 	cp $path/05*.mp3 $dest
-	
 fi
