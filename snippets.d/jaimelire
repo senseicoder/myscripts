@@ -1,7 +1,7 @@
 #!/bin/bash
 docbase="$0 chemin_nommé"
 
-if [ "$1" == 'help' || ! -d "$1" ]; then
+if [ "$1" == 'help' ] || [ ! -d "$1" ]; then
 	echo "$docbase : gère les fichiers rippé pour un cd J'aime Lire"
 else
 	pathdest=~/Sync/CNotes/Podcasts/JAimeLire
@@ -12,7 +12,7 @@ else
 	dest=$pathdest/$name.mp3
 	echo "création $dest"
 	ffmpeg -loglevel warning -i "concat:$(ls $path/0[234]*.mp3|sort|xargs|sed 's/ /|/g')" -acodec copy $dest
-	dest=$pathdest/$name_blagues.mp3
+	dest=$pathdest/${name}_blagues.mp3
 	echo "création $dest"
 	cp $path/05*.mp3 $dest
 fi
