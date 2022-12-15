@@ -1,0 +1,35 @@
+function checkParam_ExistingFile()
+{
+	local file=$1
+	local label=$2
+
+	if [ ! -z "$label" ]; then
+		label=" (pour $label)"
+	fi
+
+	if [ -z "$file" ]; then
+		echo "nom de fichier vide${label}"
+	elif [ ! -f "$file" ]; then
+		echo "fichier non trouvé: $file${label}"
+	else
+		echo -n ""
+	fi
+}
+
+function checkParam_NotExistingFile()
+{
+	local file=$1
+	local label=$2
+
+	if [ ! -z "$label" ]; then
+		label=" (pour $label)"
+	fi
+
+	if [ -z "$file" ]; then
+		echo "nom de fichier vide${label}"
+	elif [ -f "$file" ]; then
+		echo "fichier existant: $file${label}"
+	else
+		echo -n ""
+	fi
+}

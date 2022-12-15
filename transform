@@ -1,0 +1,31 @@
+#!/bin/bash
+
+ABS=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+source $ABS/transform.d/checkparams.lib
+dird=$ABS/transform.d
+
+function help
+{
+	echo "$(basename $0) <fichier source> [<fichier destination>]"
+}
+
+filesrc=$1
+filedest=$2
+scripts=()
+if [ -z "$filesrc" ]; then help
+else
+	ret=$(checkParam_ExistingFile $filesrc)
+	if [ "$ret" == "" ]; then
+		for script in $dird/*.sh; do 
+			bash $script check $filesrc
+			if [ $? -eq 0 ]; then scripts+=($script); fi
+		done
+		if [ ${#scripts[@]} -eq 0 ]; then
+			echo "aucun script trouvé pour traiter le fichier"
+		elif [ ${#scripts[@]} -eq 1 ]; then
+			bash $script $filesrc $filedest
+		else
+			echo "plusieurs scripts répondent : ${arr[@]}"
+		fi
+	fi
+fi
