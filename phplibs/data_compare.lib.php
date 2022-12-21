@@ -11,7 +11,6 @@ function AnalysesSQL($oDB, array $aAnalyses, $bDebug = FALSE, $sForme = formeCLI
 
 	foreach($aAnalyses as $sLib => $sSQL) if( ! empty($sSQL)) {
 		$aResult = $oDB->Query($sSQL);
-		if($bDebug) printf("=== %s : %s\n", $sLib, $sSQL);
 		if(count($aResult)) {
 			$aDisplay = array();
 			foreach($aResult as $aRec) $aDisplay[] = trim($aRec['lib']);
