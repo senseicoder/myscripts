@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ ! -d "$1" ]; then
+	echo "le dossier $1 n'existe pas"
+	exit 1
+else
+	cd "$1"
+	cible=~/$(basename "$1").mp3
+	for i in *.mp3; do mv "$i" $(echo "$i" | cut -d' ' -f1).mp3; done
+	ffmpeg -loglevel error -i "concat:$(ls *.mp3|sort|xargs|sed 's/ /|/g')" -acodec copy "$cible"
+fi
