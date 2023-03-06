@@ -20,6 +20,7 @@ else
 			bash $script check $filesrc
 			if [ $? -eq 0 ]; then scripts+=($(basename $script)); fi
 		done
+	
 		if [ ${#scripts[@]} -eq 0 ]; then
 			echo "aucun script trouvé pour traiter le fichier"
 		elif [ ${#scripts[@]} -eq 1 ]; then
