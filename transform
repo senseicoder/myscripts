@@ -18,14 +18,14 @@ else
 	if [ "$ret" == "" ]; then
 		for script in $dird/*.sh; do 
 			bash $script check $filesrc
-			if [ $? -eq 0 ]; then scripts+=($script); fi
+			if [ $? -eq 0 ]; then scripts+=($(basename $script)); fi
 		done
 		if [ ${#scripts[@]} -eq 0 ]; then
 			echo "aucun script trouvé pour traiter le fichier"
 		elif [ ${#scripts[@]} -eq 1 ]; then
 			bash $script $filesrc $filedest
 		else
-			echo "plusieurs scripts répondent : ${arr[@]}"
+			echo "plusieurs scripts répondent : ${scripts[@]}"
 		fi
 	fi
 fi
