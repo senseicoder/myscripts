@@ -21,10 +21,12 @@ else
 			if [ $? -eq 0 ]; then scripts+=($(basename $script)); fi
 		done
 	
+		echo $scripts
 		if [ ${#scripts[@]} -eq 0 ]; then
 			echo "aucun script trouvé pour traiter le fichier"
 		elif [ ${#scripts[@]} -eq 1 ]; then
-			bash $script $filesrc $filedest
+			echo "script retenu: ${scripts[0]}"
+			bash $dird/${scripts[0]} $filesrc $filedest
 		else
 			echo "plusieurs scripts répondent : ${scripts[@]}"
 		fi
