@@ -1,0 +1,21 @@
+#!/bin/bash
+
+before="$1"
+after="$2"
+
+if [ ! -f "$before" ]; then 
+	echo "fichier $before n'existe pas"
+	exit 1
+fi
+if [ ! -f "$after" ]; then 
+	echo "fichier $after n'existe pas"
+	exit 1
+fi
+
+IFS=$'\n'
+for i in $(diff $before $after | grep '^<' | sed 's/^..//' | grep -Eve ^$ -e '^[-A-Z0-9 ]+[a-z]*$'); do 
+	grep "$i" $after > /dev/null
+	if [ $? -ne 0 ]; then 
+		echo "$i"
+	fi
+done
