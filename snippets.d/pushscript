@@ -13,6 +13,6 @@ else
 
 		#ansible $serveurs -i ~/bin/list_new_servers.txt --list-hosts
 		#read
-		ansible $serveurs -i ~/bin/list_new_servers.txt -b -m copy -a "src=$script dest=/usr/local/bin/$nomscript mode=0755 owner=root group=root" -D
+		ansible $serveurs -b -m copy -a "src=$script dest=/usr/local/bin/$nomscript mode=0755 owner=root group=root" -D
 	fi
 fi
