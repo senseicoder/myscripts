@@ -17,7 +17,7 @@ function docker_sweep()
 
 	local liste=$(docker ps --filter "status=exited" -q |xargs)
 	docker_killrm $liste
-	docker volume ls -qf dangling=true | xargs -r docker volume rm
+	#docker volume ls -qf dangling=true | xargs -r docker volume rm
 }
 
 function docker_cleanall()
