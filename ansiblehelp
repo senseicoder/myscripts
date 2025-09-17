@@ -1,5 +1,15 @@
 #!/bin/bash
 
+function checkandadd
+{
+	local srv=$1
+	local presence=$(ssh-keygen -H  -F $srv)
+	if [ -z "$presence" ]; then
+		output=$(ssh -o StrictHostKeyChecking=no -o ConnectTimeout=5 -o PasswordAuthentication=no $srv exit 2>&1 |xargs)
+		if [ ! -z "$output" ]; then echo "$srv: $output"; fi
+	fi
+}
+
 case $1 in
 checkssh)
 	fichier=$2
@@ -10,13 +20,16 @@ checkssh)
 			srv=$(echo $srv | sed -e 's/.*ansible_ssh_host=//')
 		fi
 		srv=$(echo $srv | sed 's/ .*//')
-
-		presence=$(ssh-keygen -H  -F $srv)
-		if [ -z "$presence" ]; then
-			output=$(ssh -o StrictHostKeyChecking=no -o ConnectTimeout=5 -o PasswordAuthentication=no $srv exit 2>&1 |xargs)
-			if [ ! -z "$output" ]; then echo "$srv: $output"; fi
-		fi
+		checkandadd $srv
 	done	
+	;;
+
+checkssh_ssh)
+	fichier=$2
+	IFS=$'\n'
+	for srv in $(grep -i '^host ' $fichier | awk '{print $2}'); do 
+		checkandadd $srv
+	done
 	;;
 
 *)
