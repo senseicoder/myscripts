@@ -111,13 +111,6 @@ resetrzo)
 	sudo service docker start
 	;;
 
-#test)
-#	while 1 do;
-#		docker_in $2
-#		docker_restart $2
-#	done
-#	;;
-
 ipa)
 	docker_ipa $2
 	;;
