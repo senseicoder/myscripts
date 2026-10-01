@@ -30,7 +30,6 @@ function LoadCSV($pathCSV, $iIgnoreHeadersLines = 0)
 		$nbLine++;
 	}
 
-	#$aLines = file($pathCSV);
 	$aChamps = $aLines[0];
 	unset($aLines[0]);
 
