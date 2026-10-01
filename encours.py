@@ -7,7 +7,7 @@
 #pouvoir retrier un bloc quelconque vers prj (comme un fichier texte)
 #pouvoir retrier un bloc quelconque vers les autres blocs
 
-import os, sys, getopt
+import sys, getopt
 import re
 import pprint
 pp = pprint.PrettyPrinter(indent=1)
@@ -206,7 +206,4 @@ else:
 
 			print(repr(nature) + ' (' + repr(prevstate) + '=>' + repr(state) + '): ' + line.rstrip())
 
-	#print(aBlocks)
-	#pp.pprint(aBlocks[1])
-	#pp.pprint(aBlocks[8])
 	pp.pprint(aBlocks[15])

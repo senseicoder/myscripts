@@ -1,10 +1,6 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 import requests
-#from requests.auth import HTTPDigestAuth
-
-#import pprint
-#pp = pprint.PrettyPrinter(indent=1)
 
 #import re
 #rexDebPack = re.compile(r'^.*[.]deb$')
@@ -26,7 +22,6 @@ import os, sys, getopt
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 	def answer(self, code, content, length):
 		self.send_response(code)
-		#self.send_header('content-type', r.headers['content-type'])
 		self.send_header('content-length', length)
 		self.end_headers()
 		self.wfile.write(content)    		
