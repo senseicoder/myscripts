@@ -1,12 +1,15 @@
 #!/bin/sh
 
-temp=/tmp/pdfsmall.ps
+# fichier temporaire unique : deux pdfsmall en parallèle ne s'écrasent plus
+temp=$(mktemp /tmp/pdfsmall.XXXXXX.ps) || exit 1
+trap 'rm -f "$temp"' EXIT
 
+ret=0
 for fichier in "$@"
 do
 	echo $fichier
-	pdftops "$fichier" $temp && ps2pdf $temp "$fichier"
+	pdftops "$fichier" "$temp" && ps2pdf "$temp" "$fichier" || ret=1
 	# meilleure qualité, poids plus important pdftops -paper match -nocrop -noshrink -nocenter -level3 -q "$fichier" $temp && ps2pdf -dEmbedAllFonts=true -dUseFlateCompression=true -dProcessColorModel=/DeviceCMYK -dConvertCMYKImagesToRGB=false -dOptimize=true -dPDFSETTINGS=/prepress  $temp "$fichier"
 done
 
-rm $temp
+exit $ret
