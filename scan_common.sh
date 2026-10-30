@@ -28,7 +28,7 @@ function checkfile()
 	LISTE=("[o]ui" "[n]on")  # liste de choix disponibles
 	select CHOIX in "${LISTE[@]}" ; do
 		case $REPLY in
-			1|o) mv $file $final; exit 0; break;;
+			1|o) mv $file $final; exit 0;;
 			2|n) echo "on recommence"; break;;
 		esac
 	done
