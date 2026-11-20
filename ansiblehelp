@@ -3,7 +3,7 @@
 function checkandadd
 {
 	local srv=$1
-	local presence=$(ssh-keygen -H  -F $srv)
+	local presence=$(ssh-keygen -H -F $srv -f ~/.ssh/known_hosts.d/known_hosts)
 	if [ -z "$presence" ]; then
 		output=$(ssh -o StrictHostKeyChecking=no -o ConnectTimeout=5 -o PasswordAuthentication=no $srv exit 2>&1 |xargs)
 		if [ ! -z "$output" ]; then echo "$srv: $output"; fi
